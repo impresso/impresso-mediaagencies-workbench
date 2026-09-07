@@ -779,6 +779,8 @@
     "display_name": "Wolffs Telegraphisches Bureau",
     "aliases": [
       "Wolff",
+      "WTB",
+      "W.T.B.",
       "Wolffsburo",
       "Wolffsbureau",
       "Wolffagentur",
@@ -804,6 +806,7 @@
       ],
       "de": [
         "Wolff",
+        "WTB",
         "Wolffs Telegraphisches Bureau",
         "W.T.B.",
         "Wolffsches Telegraphenbureau",
@@ -828,7 +831,7 @@
         "note": "Semi-official news service of the Wolff/Continental agency complex. Normalize explicit service-name mentions to org.ent.pressagency.wolff."
       }
     ],
-    "annotation_note": "Normalize Continental company names and explicit Conti-Nachrichtendienst mentions to org.ent.pressagency.wolff because this inventory treats the Wolff/Continental agency complex as one canonical entity. Normalize bare Conti only in a clear dispatch-source formula such as (Conti.); leave unrelated or ambiguous running-text uses unannotated.",
+  "annotation_note": "Normalize Wolff, WTB, W.T.B., Continental company names, and explicit Conti-Nachrichtendienst mentions to org.ent.pressagency.wolff because this inventory treats the Wolff/Continental agency complex as one canonical entity. Plain WTB is a strong conventional abbreviation for Wolffs Telegraphisches Bureau in Weimar-period source formulas such as WTB. Berlin, 28. August. Normalize bare Conti only in a clear dispatch-source formula such as (Conti.); leave unrelated or ambiguous running-text uses unannotated.",
     "metadata_sources": [
       {
         "type": "wikidata",
