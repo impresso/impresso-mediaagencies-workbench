@@ -337,17 +337,28 @@ def dedupe_spans(spans: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return out
 
 
+def spans_overlap(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    return int(left["token_start"]) < int(right["token_stop"]) and int(right["token_start"]) < int(left["token_stop"])
+
+
+def suppress_alias_spans_overlapping_model_spans(
+    alias_spans: list[dict[str, Any]], model_spans: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    return [
+        span
+        for span in alias_spans
+        if not any(spans_overlap(span, model_span) for model_span in model_spans)
+    ]
+
+
 def suppress_model_spans_covered_by_aliases(
     model_spans: list[dict[str, Any]], alias_spans: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    alias_boundaries = {
-        (int(span["token_start"]), int(span["token_stop"]))
-        for span in alias_spans
-    }
+    """Deprecated compatibility wrapper; model spans now take priority."""
     return [
         span
         for span in model_spans
-        if (int(span["token_start"]), int(span["token_stop"])) not in alias_boundaries
+        if not any(spans_overlap(span, alias_span) for alias_span in alias_spans)
     ]
 
 
@@ -411,9 +422,9 @@ def score_rows(args: argparse.Namespace) -> dict[str, Any]:
                 stops,
                 text,
             )
-            model_spans = suppress_model_spans_covered_by_aliases(model_spans, alias_spans)
+            alias_spans = suppress_alias_spans_overlapping_model_spans(alias_spans, model_spans)
         spans = merge_adjacent_same_label_spans(
-            suppress_overlapping_spans(dedupe_spans(alias_spans + model_spans)), text
+            suppress_overlapping_spans(dedupe_spans(model_spans + alias_spans)), text
         )
         out = dict(row)
         out["id"] = candidate_id(row, index)

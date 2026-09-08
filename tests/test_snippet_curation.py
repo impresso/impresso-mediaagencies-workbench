@@ -58,6 +58,7 @@ from lib.score_newsagency_snippets import (
     parse_args as parse_newsagency_score_args,
     select_suggested_label,
     score_rows as score_newsagency_rows,
+    suppress_alias_spans_overlapping_model_spans,
     suppress_contained_same_label_spans,
     suppress_overlapping_spans,
 )
@@ -660,7 +661,7 @@ def test_alias_matcher_does_not_absorb_closing_parenthesis() -> None:
     ]
 
 
-def test_alias_spans_take_precedence_over_model_spans_at_same_boundary() -> None:
+def test_model_spans_take_precedence_over_alias_spans_at_same_boundary() -> None:
     model_spans = [
         {"token_start": 17, "token_stop": 18, "label": "org.ent.pressagency.ats-sda", "surface": "UTA"}
     ]
@@ -673,7 +674,35 @@ def test_alias_spans_take_precedence_over_model_spans_at_same_boundary() -> None
         }
     ]
 
-    assert suppress_model_spans_covered_by_aliases(model_spans, alias_spans) == []
+    assert suppress_alias_spans_overlapping_model_spans(alias_spans, model_spans) == []
+
+
+def test_model_spans_take_precedence_over_wider_alias_spans() -> None:
+    model_spans = [
+        {
+            "token_start": 60,
+            "token_stop": 61,
+            "label": "org.ent.pressagency.kyodo",
+            "surface": "Kyodo",
+            "confidence": 0.82,
+            "margin": 0.64,
+        }
+    ]
+    alias_spans = [
+        {
+            "token_start": 59,
+            "token_stop": 61,
+            "label": "org.ent.pressagency.kyodo",
+            "surface": "agence Kyodo",
+            "confidence": 0.51,
+            "margin": 0.51,
+            "matcher": "alias_compact",
+        }
+    ]
+
+    remaining_alias_spans = suppress_alias_spans_overlapping_model_spans(alias_spans, model_spans)
+    assert remaining_alias_spans == []
+    assert suppress_overlapping_spans(model_spans + remaining_alias_spans) == [model_spans[0]]
 
 
 def test_suppress_contained_same_label_spans_keeps_full_acronym_span() -> None:
