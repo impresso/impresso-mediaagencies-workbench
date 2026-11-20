@@ -39,6 +39,7 @@
       "dataset_summary.json",
       "manifest.json",
       "DATASET_STATISTICS.md",
+      "DATASET_QUALITY.md",
       "tsv/train.tsv",
       "tsv/validation.tsv",
       "tsv/test.tsv"
@@ -51,44 +52,46 @@
     "hf_revision": "v2.0.0"
   },
   "release_id": "dataset-v2.1.0",
-  "status": "prerelease",
+  "status": "ready",
   "summary": {
     "documents_by_split": {
-      "test": 458,
-      "train": 2339,
-      "validation": 483
+      "test": 490,
+      "train": 2572,
+      "validation": 527
     },
     "entities_by_split": {
-      "test": 612,
-      "train": 2630,
-      "validation": 545
+      "test": 634,
+      "train": 2691,
+      "validation": 587
     },
     "label_count": 99,
     "languages_by_split": {
       "test": {
-        "de": 155,
+        "de": 156,
         "en": 24,
         "fr": 269,
         "it": 2,
-        "lb": 8
+        "lb": 9,
+        "unknown": 30
       },
       "train": {
-        "de": 809,
-        "en": 125,
+        "de": 812,
+        "en": 129,
         "fr": 1268,
         "it": 9,
-        "lb": 28,
-        "unknown": 100
+        "lb": 31,
+        "unknown": 323
       },
       "validation": {
         "de": 169,
         "en": 33,
-        "fr": 276,
+        "fr": 278,
         "it": 1,
-        "lb": 4
+        "lb": 4,
+        "unknown": 42
       }
     }
   },
-  "updated_at": "2026-09-05T05:56:23.388746Z",
+  "updated_at": "2026-11-20T04:45:48.637890Z",
   "version": "v2.1.0"
 }
