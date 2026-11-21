@@ -21,7 +21,12 @@ SUGGESTION_STYLE = "\033[1;36m"
 SPAN_RE = re.compile(r"^(?P<start>\d+):(?P<stop>\d+)\s+(?P<label>\S+)$")
 TOKEN_RE = re.compile(r"\S+")
 DEFAULT_LABEL_METADATA = [Path("resources/newsagency_seeds.json"), Path("resources/radiostation_seeds.json")]
+DEFAULT_IMPRESSO_APP_URL = "https://impresso-project.ch"
 CONTEXT_RADIUS = 240
+
+
+def content_item_url(article_id: str, app_url: str = DEFAULT_IMPRESSO_APP_URL) -> str:
+    return f"{app_url.rstrip('/')}/app/content-item/{article_id}"
 
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -255,13 +260,18 @@ def format_list(values: Any) -> str:
     return str(values or "")
 
 
-def print_label_info(patch: dict[str, Any], label_metadata: dict[str, dict[str, Any]]) -> None:
+def print_label_info(
+    patch: dict[str, Any],
+    label_metadata: dict[str, dict[str, Any]],
+    *,
+    impresso_app_url: str = DEFAULT_IMPRESSO_APP_URL,
+) -> None:
     print("info")
     print(f"  metadata file: {', '.join(str(path) for path in DEFAULT_LABEL_METADATA)}")
     print(f"  source file: {patch.get('source_path', '')}")
     article_id = patch.get("document_id")
     if article_id:
-        print(f"  impresso article: https://impresso-project.ch/app/article/{article_id}")
+        print(f"  impresso article: {content_item_url(str(article_id), impresso_app_url)}")
     print("  predicted spans:")
     token_start = patch.get("token_start")
     token_stop = patch.get("token_stop")
@@ -461,7 +471,14 @@ def resolve_manual_correction(patch: dict[str, Any], raw: str) -> tuple[int, int
     return start, stop, label
 
 
-def prompt_review(patches: list[dict[str, Any]], decisions_path: Path, reviewer: str, limit: int = 0) -> dict[str, Any]:
+def prompt_review(
+    patches: list[dict[str, Any]],
+    decisions_path: Path,
+    reviewer: str,
+    limit: int = 0,
+    *,
+    impresso_app_url: str = DEFAULT_IMPRESSO_APP_URL,
+) -> dict[str, Any]:
     decisions = latest_decisions(decisions_path)
     pending = [patch for patch in patches if not is_verified(decisions.get(patch["review_id"]))]
     if limit > 0:
@@ -481,7 +498,7 @@ def prompt_review(patches: list[dict[str, Any]], decisions_path: Path, reviewer:
             if choice in {"q", "quit"}:
                 return {"reviewed": reviewed, "remaining": len(pending) - index + 1}
             if choice in {"i", "info"}:
-                print_label_info(patch, label_metadata)
+                print_label_info(patch, label_metadata, impresso_app_url=impresso_app_url)
                 continue
             if choice in {"a", "accept"}:
                 record = decision_record(patch, choice="accept", reviewer=reviewer)
@@ -535,6 +552,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--summary-json", default="")
     parser.add_argument("--queue-jsonl", default="")
+    parser.add_argument("--impresso-app-url", default=DEFAULT_IMPRESSO_APP_URL)
     parser.add_argument("--no-interactive", action="store_true")
     return parser
 
@@ -552,7 +570,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.summary_json:
         write_json(Path(args.summary_json), summary)
     if not args.no_interactive:
-        summary.update(prompt_review(patches, decisions, args.reviewer, args.limit))
+        summary.update(prompt_review(patches, decisions, args.reviewer, args.limit, impresso_app_url=args.impresso_app_url))
     print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
     return 0
 

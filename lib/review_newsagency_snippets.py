@@ -20,6 +20,11 @@ SPAN_RE = re.compile(r"^(?P<start>\d+):(?P<stop>\d+)\s+(?P<label>\S+)$")
 NUMBERED_TOKEN_RE = re.compile(r"(?P<index>\d+):(?P<token>\S+)")
 DEFAULT_LABEL_METADATA = Path("resources/newsagency_seeds.json")
 EXTRA_DEFAULT_LABEL_METADATA = [Path("resources/radiostation_seeds.json")]
+DEFAULT_IMPRESSO_APP_URL = "https://impresso-project.ch"
+
+
+def content_item_url(article_id: str, app_url: str = DEFAULT_IMPRESSO_APP_URL) -> str:
+    return f"{app_url.rstrip('/')}/app/content-item/{article_id}"
 
 
 def load_coverage(path: Path | None) -> dict[str, dict[str, Any]]:
@@ -154,6 +159,7 @@ def print_label_info(
     label_metadata: dict[str, dict[str, Any]],
     *,
     input_path: Path | None = None,
+    impresso_app_url: str = DEFAULT_IMPRESSO_APP_URL,
 ) -> None:
     article_id = impresso_article_id(row)
     label = row.get("candidate_label") or row.get("curation", {}).get("label") or ""
@@ -171,7 +177,7 @@ def print_label_info(
     if source_path:
         print(f"  source file: {source_path}")
     if article_id:
-        print(f"  impresso article: https://impresso-project.ch/app/content-item/{article_id}")
+        print(f"  impresso article: {content_item_url(article_id, impresso_app_url)}")
     for current_label in labels:
         row_info = label_metadata.get(current_label)
         print(f"  label: {current_label}")
@@ -205,10 +211,17 @@ def print_label_info(
                 print(f"      - {source.get('type', 'source')}: {source.get('url', '')}")
 
 
-def print_review_item(row: dict[str, Any], index: int, total: int, *, review_prefix: str = "newsagency-snippet") -> None:
+def print_review_item(
+    row: dict[str, Any],
+    index: int,
+    total: int,
+    *,
+    review_prefix: str = "newsagency-snippet",
+    impresso_app_url: str = DEFAULT_IMPRESSO_APP_URL,
+) -> None:
     print("\n" + "=" * 88)
     article_id = impresso_article_id(row)
-    article_url = f" https://impresso-project.ch/app/content-item/{article_id}" if article_id else ""
+    article_url = f" {content_item_url(article_id, impresso_app_url)}" if article_id else ""
     print(f"{index}/{total} {review_id(row, prefix=review_prefix)}{article_url}")
     print(f"query: {row.get('query', '')}")
     print(f"candidate label: {row.get('candidate_label') or row.get('curation', {}).get('label') or ''}")
@@ -341,7 +354,11 @@ def confirm_annotation_finished(
                 print("  " + span_line(span, span_index))
         else:
             print("  <none>")
-        raw = input("annotation finished? [Y/m] ").strip().lower()
+        raw = input("annotation finished? [Y/m/d N/N] ").strip()
+        if raw == "N":
+            print(numbered_tokens(row))
+            continue
+        raw = raw.lower()
         if raw in {"", "y", "yes"}:
             return accepted_spans
         if raw == "m":
@@ -349,7 +366,19 @@ def confirm_annotation_finished(
             if manual_spans:
                 accepted_spans.extend(manual_spans)
             continue
-        print("Invalid choice; use y to save or m to add manual annotation spans.")
+        if raw in {"d", "del", "delete", "remove"}:
+            print("Choose an annotation number to delete, for example: d 1")
+            continue
+        delete_match = re.match(r"^(?:d|del|delete|remove)\s+(\d+)$", raw)
+        if delete_match:
+            span_index = int(delete_match.group(1))
+            if not 1 <= span_index <= len(accepted_spans):
+                print(f"Invalid annotation number: {span_index}")
+                continue
+            removed = accepted_spans.pop(span_index - 1)
+            print("deleted annotation: " + span_line(removed, span_index))
+            continue
+        print("Invalid choice; use y to save, m to add manual annotation spans, N to show numbered tokens, or d N to delete an annotation.")
 
 
 def review_loop(
@@ -364,6 +393,7 @@ def review_loop(
     coverage_json: Path | None = None,
     only_under_target: bool = False,
     review_statuses: set[str] | None = None,
+    impresso_app_url: str = DEFAULT_IMPRESSO_APP_URL,
 ) -> int:
     decisions = latest_decisions(decisions_path)
     label_metadata = load_label_metadata(label_metadata_path)
@@ -385,7 +415,7 @@ def review_loop(
             break
         while True:
             clear_screen()
-            print_review_item(row, index, len(pending), review_prefix=review_prefix)
+            print_review_item(row, index, len(pending), review_prefix=review_prefix, impresso_app_url=impresso_app_url)
             spans = prediction_spans(row)
             notes = ""
             while True:
@@ -402,10 +432,10 @@ def review_loop(
                     raw = "remove"
                     break
                 if raw.lower() == "i":
-                    print_label_info(row, label_metadata_path, label_metadata, input_path=input_path)
+                    print_label_info(row, label_metadata_path, label_metadata, input_path=input_path, impresso_app_url=impresso_app_url)
                     input("press Enter to return to curation > ")
                     clear_screen()
-                    print_review_item(row, index, len(pending), review_prefix=review_prefix)
+                    print_review_item(row, index, len(pending), review_prefix=review_prefix, impresso_app_url=impresso_app_url)
                     continue
                 raw = raw.lower()
                 if raw == "n":
@@ -464,7 +494,7 @@ def apply_decisions(rows: list[dict[str, Any]], decisions_path: Path, *, review_
                 "reviewed_at": decision.get("reviewed_at"),
                 "notes": decision.get("notes"),
             }
-            if decision.get("accepted_spans"):
+            if "accepted_spans" in decision:
                 revised["accepted_spans"] = decision["accepted_spans"]
         out.append(revised)
     return out
@@ -480,6 +510,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--label-metadata", default=str(DEFAULT_LABEL_METADATA))
     parser.add_argument("--review-prefix", default="newsagency-snippet")
     parser.add_argument("--coverage-json", type=Path)
+    parser.add_argument("--impresso-app-url", default=DEFAULT_IMPRESSO_APP_URL)
     parser.add_argument("--only-under-target", action="store_true")
     parser.add_argument(
         "--review-status",
@@ -509,6 +540,7 @@ def main(argv: list[str] | None = None) -> int:
             coverage_json=args.coverage_json,
             only_under_target=args.only_under_target,
             review_statuses=review_statuses,
+            impresso_app_url=args.impresso_app_url,
         )
     revised = apply_decisions(rows, Path(args.decisions), review_prefix=args.review_prefix)
     write_jsonl(Path(args.output), revised)

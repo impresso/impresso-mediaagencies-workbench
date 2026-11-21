@@ -19,6 +19,7 @@ LABEL_ALIASES = {
     "org.ent.pressagency.conti": "org.ent.pressagency.wolff",
     "org.ent.pressagency.reuter": "org.ent.pressagency.reuters",
 }
+EXPORT_DIAGNOSTICS: Counter[str] = Counter()
 
 
 def load_label_map(path: Path) -> dict[str, Any]:
@@ -52,15 +53,14 @@ def selected_spans(row: dict[str, Any]) -> list[dict[str, Any]]:
     manual = row.get("accepted_spans")
     if isinstance(manual, list):
         return [span for span in manual if isinstance(span, dict)]
-    model = row.get("model")
-    if isinstance(model, dict) and isinstance(model.get("predicted_spans"), list):
-        target = row.get("curation", {}).get("label") or row.get("candidate_label")
-        spans = [span for span in model["predicted_spans"] if isinstance(span, dict)]
-        if target:
-            matching = [span for span in spans if span.get("label") == target]
-            return matching or spans
-        return spans
     return []
+
+
+def row_text_slice(row: dict[str, Any], start: int, stop: int) -> str:
+    text = str(row.get("text") or row.get("snippet") or "")
+    if 0 <= start < stop <= len(text):
+        return text[start:stop]
+    return ""
 
 
 def canonical_label(label: Any) -> str:
@@ -120,12 +120,19 @@ def normalized_span_for_export(
         token_start = int(span["token_start"])
         token_stop = int(span["token_stop"])
     except (KeyError, TypeError, ValueError):
-        return None
-    if 0 <= token_start < token_stop <= len(starts):
-        token_char_start = starts[token_start]
-        token_char_stop = stops[token_stop - 1]
-        if "start" not in span or "stop" not in span:
-            return {**span, "start": token_char_start, "stop": token_char_stop, "token_start": token_start, "token_stop": token_stop}
+        token_start = -1
+        token_stop = -1
+        token_char_start = -1
+        token_char_stop = -1
+    else:
+        if 0 <= token_start < token_stop <= len(starts):
+            token_char_start = starts[token_start]
+            token_char_stop = stops[token_stop - 1]
+            if "start" not in span or "stop" not in span:
+                return {**span, "start": token_char_start, "stop": token_char_stop, "token_start": token_start, "token_stop": token_stop}
+        else:
+            token_char_start = -1
+            token_char_stop = -1
     try:
         char_start = int(span["start"])
         char_stop = int(span["stop"])
@@ -143,7 +150,10 @@ def normalized_span_for_export(
         return normalized_span_from_surface(row_id, span, text=text, starts=starts, stops=stops)
     if repaired_token_start >= repaired_token_stop:
         return normalized_span_from_surface(row_id, span, text=text, starts=starts, stops=stops)
-    print(f"{row_id}: repaired stale token offsets for span {char_start}:{char_stop} {span.get('label', '')}")
+    if span.get("source") == "cookbook_prediction":
+        EXPORT_DIAGNOSTICS["cookbook_prediction_token_offsets_derived"] += 1
+    else:
+        print(f"{row_id}: repaired stale token offsets for span {char_start}:{char_stop} {span.get('label', '')}")
     return {**span, "start": char_start, "stop": char_stop, "token_start": repaired_token_start, "token_stop": repaired_token_stop}
 
 
@@ -493,6 +503,7 @@ def deduplicate_exported_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]
 
 
 def export_rows(input_path: Path, label_map_path: Path, *, extra_label_metadata: list[Path] | None = None) -> list[dict[str, Any]]:
+    EXPORT_DIAGNOSTICS.clear()
     label_map = load_label_map(label_map_path)
     if extra_label_metadata:
         label_map = extend_label_map(label_map, extra_label_metadata)
@@ -503,8 +514,12 @@ def export_rows(input_path: Path, label_map_path: Path, *, extra_label_metadata:
         status = str(curation.get("status") or "")
         if status not in ACCEPTED_STATUSES | NEGATIVE_STATUSES:
             continue
-        spans = [] if status in NEGATIVE_STATUSES else selected_spans(row)
-        if not spans and status in ACCEPTED_STATUSES:
+        explicit_accepted_spans = isinstance(row.get("accepted_spans"), list)
+        if status in NEGATIVE_STATUSES:
+            spans = []
+        elif explicit_accepted_spans:
+            spans = selected_spans(row)
+        else:
             continue
         spans = canonicalize_span_labels(str(row.get("id") or row.get("document_id") or ""), spans)
         text, tokens, starts, stops = candidate_tokens(row)
@@ -512,7 +527,7 @@ def export_rows(input_path: Path, label_map_path: Path, *, extra_label_metadata:
         spans = valid_spans_for_export(row, spans, text=text, starts=starts, stops=stops)
         spans = normalize_span_boundaries(spans, text)
         spans = valid_spans_for_export(row, spans, text=text, starts=starts, stops=stops)
-        if not spans and status in ACCEPTED_STATUSES:
+        if not spans and status in ACCEPTED_STATUSES and not explicit_accepted_spans:
             continue
         prepared.append((row, spans, text, tokens, starts, stops))
     id_counts = Counter(str(row["id"]) for row, *_ in prepared)
@@ -620,6 +635,11 @@ def main(argv: list[str] | None = None) -> int:
         validation_output=Path(args.validation_output) if args.validation_output else None,
         test_output=Path(args.test_output) if args.test_output else None,
     )
+    if EXPORT_DIAGNOSTICS["cookbook_prediction_token_offsets_derived"]:
+        print(
+            "derived token offsets for "
+            f"{EXPORT_DIAGNOSTICS['cookbook_prediction_token_offsets_derived']} accepted cookbook prediction span(s)"
+        )
     print(json.dumps({"rows": len(rows), "outputs": counts}, ensure_ascii=False, sort_keys=True))
     return 0
 

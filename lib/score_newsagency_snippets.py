@@ -413,8 +413,17 @@ def load_model_runtime(args: argparse.Namespace) -> tuple[Any, Any, Any, Any, st
     model_name = str(getattr(args, "model", "") or "")
     if not model_name:
         return None
-    torch, model_cls, tokenizer_cls = import_runtime()
     model_ref = resolve_model_ref(model_name)
+    if "/" in model_ref and not model_ref.startswith(("http://", "https://")):
+        model_path = Path(model_ref)
+        if not model_path.exists() and model_ref.count("/") > 1:
+            raise SystemExit(
+                f"Model path does not exist: {model_ref}\n\n"
+                "Transformers would otherwise treat this as a Hugging Face repo id. "
+                "Point HF_MODEL/--model to an existing local model directory, or use a Hub id like "
+                "impresso-project/mmbert-impresso-mediasources-ner."
+            )
+    torch, model_cls, tokenizer_cls = import_runtime()
     device = device_for(str(getattr(args, "device", "auto")), torch)
     tokenizer = tokenizer_cls.from_pretrained(model_ref)
     model = model_cls.from_pretrained(model_ref).to(device)
@@ -467,17 +476,28 @@ def known_entity_scorers(args: argparse.Namespace) -> list[str]:
     return scorers
 
 
+def spans_overlap(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    return int(left["token_start"]) < int(right["token_stop"]) and int(right["token_start"]) < int(left["token_stop"])
+
+
+def suppress_alias_spans_overlapping_model_spans(
+    alias_spans: list[dict[str, Any]], model_spans: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    return [
+        span
+        for span in alias_spans
+        if not any(spans_overlap(span, model_span) for model_span in model_spans)
+    ]
+
+
 def suppress_model_spans_covered_by_aliases(
     model_spans: list[dict[str, Any]], alias_spans: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    alias_boundaries = {
-        (int(span["token_start"]), int(span["token_stop"]))
-        for span in alias_spans
-    }
+    """Deprecated compatibility wrapper; model spans now take priority."""
     return [
         span
         for span in model_spans
-        if (int(span["token_start"]), int(span["token_stop"])) not in alias_boundaries
+        if not any(spans_overlap(span, alias_span) for alias_span in alias_spans)
     ]
 
 
@@ -544,9 +564,9 @@ def score_rows(args: argparse.Namespace) -> dict[str, Any]:
                 stops,
                 text,
             )
-            model_spans = suppress_model_spans_covered_by_aliases(model_spans, alias_spans)
+            alias_spans = suppress_alias_spans_overlapping_model_spans(alias_spans, model_spans)
         spans = merge_adjacent_same_label_spans(
-            suppress_overlapping_spans(alias_spans + model_spans), text
+            suppress_overlapping_spans(model_spans + alias_spans), text
         )
         label = candidate_label(row) or None
         temporal_verification = verify_entity_start_year(row=row, label=label, label_metadata=label_metadata)

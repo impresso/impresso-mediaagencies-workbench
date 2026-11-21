@@ -11,6 +11,7 @@ from lib.build_newsagency_snippets import build_snippets
 from lib.annotation_stats import build_stats, fill_defaults, parse_args
 from lib.export_snippet_training_data import apply_holdout_deficit_assignments, apply_split_assignments, canonical_label, deduplicate_exported_rows, export_rows, write_split_outputs
 from lib.review_newsagency_snippets import (
+    apply_decisions,
     confirm_annotation_finished,
     coverage_priority,
     parse_manual_span,
@@ -26,6 +27,7 @@ from lib.sample_newsagencies import (
     RateLimitThrottle,
     balanced_select,
     bucket_is_undercovered,
+    connect_impresso_from_env,
     context_window,
     expand_candidate_with_full_content,
     extract_candidate,
@@ -56,10 +58,75 @@ from lib.score_newsagency_snippets import (
     parse_args as parse_newsagency_score_args,
     select_suggested_label,
     score_rows as score_newsagency_rows,
+    suppress_alias_spans_overlapping_model_spans,
     suppress_contained_same_label_spans,
     suppress_overlapping_spans,
 )
 from lib.snippet_data import row_text, tokenize_with_offsets, write_jsonl
+
+
+def test_connect_impresso_from_env_persists_token_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[dict[str, object]] = []
+
+    def fake_connect(**kwargs: object) -> str:
+        calls.append(kwargs)
+        return "connected"
+
+    class FakeClient:
+        def __init__(self, **_kwargs: object) -> None:
+            raise AssertionError("direct token client should not be used")
+
+    monkeypatch.delenv("IMPRESSO_API_TOKEN", raising=False)
+    monkeypatch.delenv("IMPRESSO_PERSISTED_TOKEN", raising=False)
+    monkeypatch.setenv("IMPRESSO_API_URL", "https://dev.impresso-project.ch/public-api/v1")
+
+    result = connect_impresso_from_env(fake_connect, FakeClient, "https://impresso-project.ch/public-api/v1")
+
+    assert result == "connected"
+    assert calls == [
+        {
+            "public_api_url": "https://dev.impresso-project.ch/public-api/v1",
+            "persisted_token": True,
+        }
+    ]
+
+
+def test_connect_impresso_from_env_can_disable_persistent_token(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[dict[str, object]] = []
+
+    def fake_connect(**kwargs: object) -> str:
+        calls.append(kwargs)
+        return "connected"
+
+    monkeypatch.delenv("IMPRESSO_API_TOKEN", raising=False)
+    monkeypatch.setenv("IMPRESSO_PERSISTED_TOKEN", "false")
+    monkeypatch.delenv("IMPRESSO_API_URL", raising=False)
+
+    result = connect_impresso_from_env(fake_connect, object, "https://impresso-project.ch/public-api/v1")
+
+    assert result == "connected"
+    assert calls == [{"public_api_url": None, "persisted_token": False}]
+
+
+def test_connect_impresso_from_env_uses_direct_token_without_cache(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_connect(**_kwargs: object) -> None:
+        raise AssertionError("impresso-py connect should not be used when IMPRESSO_API_TOKEN is set")
+
+    class FakeClient:
+        def __init__(self, **kwargs: object) -> None:
+            self.kwargs = kwargs
+
+    monkeypatch.setenv("IMPRESSO_API_TOKEN", "secret-token")
+    monkeypatch.setenv("IMPRESSO_PERSISTED_TOKEN", "true")
+    monkeypatch.setenv("IMPRESSO_API_URL", "https://dev.impresso-project.ch/public-api/v1")
+
+    result = connect_impresso_from_env(fake_connect, FakeClient, "https://impresso-project.ch/public-api/v1")
+
+    assert isinstance(result, FakeClient)
+    assert result.kwargs == {
+        "api_url": "https://dev.impresso-project.ch/public-api/v1",
+        "api_bearer_token": "secret-token",
+    }
 
 
 def test_tokenize_with_offsets_keeps_character_spans() -> None:
@@ -594,7 +661,7 @@ def test_alias_matcher_does_not_absorb_closing_parenthesis() -> None:
     ]
 
 
-def test_alias_spans_take_precedence_over_model_spans_at_same_boundary() -> None:
+def test_model_spans_take_precedence_over_alias_spans_at_same_boundary() -> None:
     model_spans = [
         {"token_start": 17, "token_stop": 18, "label": "org.ent.pressagency.ats-sda", "surface": "UTA"}
     ]
@@ -607,7 +674,35 @@ def test_alias_spans_take_precedence_over_model_spans_at_same_boundary() -> None
         }
     ]
 
-    assert suppress_model_spans_covered_by_aliases(model_spans, alias_spans) == []
+    assert suppress_alias_spans_overlapping_model_spans(alias_spans, model_spans) == []
+
+
+def test_model_spans_take_precedence_over_wider_alias_spans() -> None:
+    model_spans = [
+        {
+            "token_start": 60,
+            "token_stop": 61,
+            "label": "org.ent.pressagency.kyodo",
+            "surface": "Kyodo",
+            "confidence": 0.82,
+            "margin": 0.64,
+        }
+    ]
+    alias_spans = [
+        {
+            "token_start": 59,
+            "token_stop": 61,
+            "label": "org.ent.pressagency.kyodo",
+            "surface": "agence Kyodo",
+            "confidence": 0.51,
+            "margin": 0.51,
+            "matcher": "alias_compact",
+        }
+    ]
+
+    remaining_alias_spans = suppress_alias_spans_overlapping_model_spans(alias_spans, model_spans)
+    assert remaining_alias_spans == []
+    assert suppress_overlapping_spans(model_spans + remaining_alias_spans) == [model_spans[0]]
 
 
 def test_suppress_contained_same_label_spans_keeps_full_acronym_span() -> None:
@@ -1654,6 +1749,107 @@ def test_export_snippet_training_data_writes_training_rows(tmp_path: Path) -> No
     assert "source_component" not in rows[0]
     assert "entity_id" not in rows[0]["entities"][0]
     assert "normalized_surface" not in rows[0]["entities"][0]
+
+
+def test_export_snippet_training_data_requires_explicit_accepted_spans(tmp_path: Path, capsys) -> None:
+    input_path = tmp_path / "reviewed.jsonl"
+    label_map_path = tmp_path / "label_map.json"
+    label_map_path.write_text(
+        json.dumps(
+            {
+                "label2id": {
+                    "O": 0,
+                    "B-org.ent.pressagency.wolff": 1,
+                    "I-org.ent.pressagency.wolff": 2,
+                },
+                "id2label": {
+                    "0": "O",
+                    "1": "B-org.ent.pressagency.wolff",
+                    "2": "I-org.ent.pressagency.wolff",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    write_jsonl(
+        input_path,
+        [
+            {
+                "id": "cookbook-snippet:BBLT-1877-02-23-a-i0106",
+                "text": "The agency Wolff reports.",
+                "candidate_label": "org.ent.pressagency.wolff",
+                "model": {"predicted_spans": []},
+                "cookbook_prediction": {
+                    "label": "org.ent.pressagency.wolff",
+                    "surface": "Wolff",
+                    "snippet_start": 11,
+                    "snippet_stop": 16,
+                },
+                "curation": {
+                    "status": "accepted",
+                    "label": "org.ent.pressagency.wolff",
+                    "reasons": ["no_predicted_media_source_span"],
+                },
+            }
+        ],
+    )
+
+    rows = export_rows(input_path, label_map_path)
+
+    assert rows == []
+    captured = capsys.readouterr()
+    assert "repaired stale token offsets" not in captured.out
+
+
+def test_export_snippet_training_data_exports_accepted_none_as_negative(tmp_path: Path) -> None:
+    input_path = tmp_path / "reviewed.jsonl"
+    label_map_path = tmp_path / "label_map.json"
+    label_map_path.write_text(
+        json.dumps(
+            {
+                "label2id": {
+                    "O": 0,
+                    "B-org.ent.pressagency.ap": 1,
+                },
+                "id2label": {
+                    "0": "O",
+                    "1": "B-org.ent.pressagency.ap",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    write_jsonl(
+        input_path,
+        [
+            {
+                "id": "cookbook-snippet:MEWT-1875-04-03-a-i0030",
+                "text": "The room burst into applause.",
+                "candidate_label": "org.ent.pressagency.ap",
+                "model": {"predicted_spans": []},
+                "cookbook_prediction": {
+                    "label": "org.ent.pressagency.ap",
+                    "surface": "applause",
+                    "snippet_start": 20,
+                    "snippet_stop": 28,
+                },
+                "curation": {
+                    "status": "accepted",
+                    "label": "org.ent.pressagency.ap",
+                    "reasons": ["no_predicted_media_source_span"],
+                },
+                "accepted_spans": [],
+            }
+        ],
+    )
+
+    rows = export_rows(input_path, label_map_path)
+
+    assert len(rows) == 1
+    assert rows[0]["entities"] == []
+    assert set(rows[0]["token_labels"]) == {"O"}
+    assert rows[0]["legacy"]["review_status"] == "accepted"
+    assert rows[0]["quality_flags"] == ["reviewed_negative_snippet"]
 
 
 def test_export_snippet_training_data_extends_label_map_with_radio_metadata(tmp_path: Path) -> None:
@@ -3433,6 +3629,85 @@ def test_accept_confirmation_can_add_missed_manual_annotation(monkeypatch) -> No
     ]
 
 
+def test_accept_confirmation_can_print_numbered_tokens(monkeypatch, capsys) -> None:
+    row = {
+        "text": "APA et ADN",
+        "tokens": ["APA", "et", "ADN"],
+        "token_start_offsets": [0, 4, 7],
+        "token_end_offsets": [3, 6, 10],
+        "candidate_label": "org.ent.pressagency.apa",
+    }
+    accepted = [
+        {
+            "token_start": 0,
+            "token_stop": 1,
+            "label": "org.ent.pressagency.apa",
+            "surface": "APA",
+        }
+    ]
+    answers = iter(["N", ""])
+    monkeypatch.setattr("builtins.input", lambda _prompt="": next(answers))
+
+    completed = confirm_annotation_finished(row, accepted, {})
+
+    assert completed == accepted
+    captured = capsys.readouterr()
+    assert "0:APA" in captured.out
+
+
+def test_accept_confirmation_bare_delete_prints_hint(monkeypatch, capsys) -> None:
+    row = {
+        "text": "APA et ADN",
+        "tokens": ["APA", "et", "ADN"],
+        "token_start_offsets": [0, 4, 7],
+        "token_end_offsets": [3, 6, 10],
+        "candidate_label": "org.ent.pressagency.apa",
+    }
+    accepted = [
+        {
+            "token_start": 0,
+            "token_stop": 1,
+            "label": "org.ent.pressagency.apa",
+            "surface": "APA",
+        }
+    ]
+    answers = iter(["d", ""])
+    monkeypatch.setattr("builtins.input", lambda _prompt="": next(answers))
+
+    completed = confirm_annotation_finished(row, accepted, {})
+
+    assert completed == accepted
+    captured = capsys.readouterr()
+    assert "for example: d 1" in captured.out
+
+
+def test_apply_decisions_preserves_empty_accepted_spans(tmp_path: Path) -> None:
+    decisions_path = tmp_path / "decisions.jsonl"
+    row = {
+        "id": "cookbook-snippet:MEWT-1875-04-03-a-i0030",
+        "curation": {"status": "needs_review", "label": "org.ent.pressagency.ap"},
+    }
+    write_jsonl(
+        decisions_path,
+        [
+            {
+                "review_id": "pressagency-span:cookbook-snippet:MEWT-1875-04-03-a-i0030",
+                "candidate_id": "cookbook-snippet:MEWT-1875-04-03-a-i0030",
+                "status": "accepted",
+                "accepted_spans": [],
+                "reviewer": "tester",
+                "reviewed_at": "2026-09-05T00:00:00+02:00",
+                "notes": "",
+            }
+        ],
+    )
+
+    revised = apply_decisions([row], decisions_path, review_prefix="pressagency-span")
+
+    assert revised[0]["curation"]["status"] == "accepted"
+    assert revised[0]["accepted_spans"] == []
+
+
 def test_newsagency_manual_review_prints_numbered_tokens(tmp_path: Path, monkeypatch, capsys) -> None:
     decisions_path = tmp_path / "decisions.jsonl"
     label_metadata_path = tmp_path / "newsagency_seeds.json"
@@ -3536,6 +3811,47 @@ def test_newsagency_review_accepts_multiple_prediction_spans(tmp_path: Path, mon
         "org.ent.pressagency.reuters",
     ]
     assert decision["notes"] == "two agencies"
+
+
+def test_newsagency_review_can_delete_accepted_annotation_before_saving(tmp_path: Path, monkeypatch) -> None:
+    decisions_path = tmp_path / "decisions.jsonl"
+    row = {
+        "id": "snippet-delete-span",
+        "query": "Associated Press",
+        "candidate_label": "org.ent.pressagency.ap",
+        "curation": {"status": "needs_review", "label": "org.ent.pressagency.ap", "reasons": ["multiple_predicted_spans"]},
+        "text": "The Associated Press reports.",
+        "tokens": ["The", "Associated", "Press", "reports", "."],
+        "token_start_offsets": [0, 4, 15, 21, 28],
+        "token_end_offsets": [3, 14, 20, 28, 29],
+        "model": {
+            "predicted_spans": [
+                {
+                    "token_start": 0,
+                    "token_stop": 3,
+                    "label": "org.ent.pressagency.ap",
+                    "surface": "The Associated Press",
+                    "confidence": 0.51,
+                    "margin": 0.51,
+                },
+                {
+                    "token_start": 1,
+                    "token_stop": 3,
+                    "label": "org.ent.pressagency.ap",
+                    "surface": "Associated Press",
+                },
+            ]
+        },
+    }
+    answers = iter(["a", "a", "a", "d 1", ""])
+    monkeypatch.setattr("builtins.input", lambda _prompt="": next(answers))
+
+    reviewed = review_loop([row], decisions_path, "tester", limit=0)
+
+    decision = json.loads(decisions_path.read_text(encoding="utf-8"))
+    assert reviewed == 1
+    assert len(decision["accepted_spans"]) == 1
+    assert decision["accepted_spans"][0]["surface"] == "Associated Press"
 
 
 def test_newsagency_review_accepts_all_prediction_spans_with_A(tmp_path: Path, monkeypatch) -> None:

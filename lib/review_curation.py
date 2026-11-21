@@ -11,6 +11,8 @@ from typing import Any
 from . import review_ui
 
 
+DEFAULT_IMPRESSO_APP_URL = "https://impresso-project.ch"
+
 CHOICES = {
     "g": "gold",
     "p": "prediction",
@@ -69,10 +71,14 @@ def format_entity(entity: dict[str, Any] | None) -> str:
     return f"{entity['surface']} [{entity['label']}] tokens={entity['token_start']}:{entity['token_stop']}"
 
 
-def format_document_metadata(document: dict[str, Any]) -> str:
+def content_item_url(content_item_id: str, app_url: str = DEFAULT_IMPRESSO_APP_URL) -> str:
+    return f"{app_url.rstrip('/')}/app/content-item/{content_item_id}"
+
+
+def format_document_metadata(document: dict[str, Any], *, impresso_app_url: str = DEFAULT_IMPRESSO_APP_URL) -> str:
     document_id = str(document.get("id") or "")
     content_item_id = document_id.split("#", 1)[0]
-    url = f"https://impresso-project.ch/app/content-item/{content_item_id}" if content_item_id else ""
+    url = content_item_url(content_item_id, impresso_app_url) if content_item_id else ""
     date = str(document.get("date") or "").split("T", 1)[0]
     return " ".join(value for value in [url, str(document.get("newspaper") or ""), date] if value)
 
@@ -359,7 +365,14 @@ def prompt_manual_spans(item: dict[str, Any]) -> list[dict[str, Any]] | None:
             print("Invalid choice; use y to finish, n to add another span, or v to revise.")
 
 
-def review_loop(items: list[dict[str, Any]], decisions_path: Path, reviewer: str, *, limit: int) -> int:
+def review_loop(
+    items: list[dict[str, Any]],
+    decisions_path: Path,
+    reviewer: str,
+    *,
+    limit: int,
+    impresso_app_url: str = DEFAULT_IMPRESSO_APP_URL,
+) -> int:
     reviewed = 0
     for index, item in enumerate(items, start=1):
         if limit and reviewed >= limit:
@@ -369,7 +382,7 @@ def review_loop(items: list[dict[str, Any]], decisions_path: Path, reviewer: str
         print(f"{index}/{len(items)} {item['review_id']}")
         print(f"{item['split']} {item['language']} {item['issue_type']}")
         doc = item["document"]
-        print(format_document_metadata(doc))
+        print(format_document_metadata(doc, impresso_app_url=impresso_app_url))
         print("-" * 88)
         print(format_highlighted_context(item))
         print("=" * 88)
@@ -439,6 +452,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--decisions", required=True)
     parser.add_argument("--reviewer", required=True)
     parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument("--impresso-app-url", default=DEFAULT_IMPRESSO_APP_URL)
     return parser.parse_args(argv)
 
 
@@ -448,7 +462,7 @@ def main(argv: list[str] | None = None) -> int:
     decisions = latest_decisions(Path(args.decisions))
     items = pending_items(disagreements, decisions)
     print(f"pending: {len(items)} / total: {len(disagreements)}")
-    reviewed = review_loop(items, Path(args.decisions), args.reviewer, limit=args.limit)
+    reviewed = review_loop(items, Path(args.decisions), args.reviewer, limit=args.limit, impresso_app_url=args.impresso_app_url)
     print(f"reviewed: {reviewed}")
     return 0
 
