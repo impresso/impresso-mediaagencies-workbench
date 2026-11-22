@@ -1,7 +1,7 @@
 include configs/model-v2.1.0.mk
 
 HF_DATASET_COMMIT = 26864265198dc5d68fd26018a134574a99caa249
-HF_DATASET_LOCAL_DIR = ../impresso-mediaagencies-workbench/hf.d/dataset-v2.1.0
+HF_DATASET_LOCAL_DIR = hf.d/dataset-v2.1.0
 
 DATASET_SOURCE_DIR = $(HF_DATASET_LOCAL_DIR)
 TRAIN_JSONL = $(DATASET_SOURCE_DIR)/data/train.jsonl

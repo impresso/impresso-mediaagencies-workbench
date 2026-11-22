@@ -21,13 +21,6 @@
       "metrics_match": true,
       "mismatches": 0
     },
-    "published_inference_parity": {
-      "documents": 490,
-      "matching_documents": 490,
-      "metrics_match": true,
-      "mismatches": 0,
-      "revision": "ebba15a1f4ddda45ef2e6d4487d6df67c66a34e7"
-    },
     "selected_checkpoint_validation": {
       "entity_correct": 530,
       "entity_f1": 0.9290096406660825,
@@ -41,6 +34,19 @@
       "all_subtoken_viterbi": 0.9246935201401052,
       "first_subtoken": 0.8994800693240902,
       "first_subtoken_viterbi": 0.9290096406660825
+    },
+    "published_artifact_inference_parity": {
+      "model_commit": "1dfa9a3e39d6792fc75f1d8f1089e2909bf14b83",
+      "model_revision": "v2.1.0",
+      "verified_on": "2026-11-23",
+      "documents": 490,
+      "matching_documents": 490,
+      "mismatches": 0,
+      "metrics_match": true,
+      "entity_correct": 539,
+      "entity_gold": 634,
+      "entity_predicted": 577,
+      "entity_f1": 0.8901734104046243
     }
   },
   "label_supervision": {
@@ -48,7 +54,7 @@
     "subtoken_labeling": "all_subtokens_b_to_i"
   },
   "model": {
-    "commit": "ebba15a1f4ddda45ef2e6d4487d6df67c66a34e7",
+    "commit": null,
     "previous_commit": "5f600305a86b90d5467c5d71b827e0f33872776c",
     "repository": "impresso-project/mmbert-impresso-mediasources-ner",
     "revision": "v2.1.0"

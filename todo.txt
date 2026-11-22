@@ -86,3 +86,230 @@ sbp → neue Entity org.ent.pressagency.sbp
 Der Name sollte zunächst Sozialdemokratischer Bundesstadt-Pressedienst (SBP) sein. Der Beleg ist stark genug, dass ich das Sample keinesfalls entfernen würde.
 
 Das ist außerdem ein guter Kandidat für einen neuen Seed. Vor dem Anlegen würde ich noch Gründungs-/Enddaten, weitere Namensformen und eventuell einen Wikidata-Eintrag gezielt recherchieren; SBP sollte wegen der vielen anderen Auflösungen des Akronyms nur kontextuell gematcht werden.
+
+
+
+Not in the current seed shown here. There is no Bulgarian news-agency entity among the entries.
+
+Historically, the likely referent depends strongly on date:
+
+* Before 1944: Bulgarische Nachrichtenagentur could be a descriptive reference to the Bulgarian Telegraph Agency (BTA), founded in Sofia in 1898.
+* After 1944: it would likewise normally be BTA, which continued as Bulgaria’s national/state news agency.
+
+So unlike the Russian case, this is probably quite straightforward: I would expect bulgarische Nachrichtenagentur to map to a new BTA / Bulgarian Telegraph Agency seed.
+
+A sensible canonical entity would be:
+
+{
+  "canonical_id": "bta",
+  "label": "org.ent.pressagency.bta",
+  "display_name": "Bulgarian Telegraph Agency",
+  "aliases": [
+    "BTA",
+    "Bulgarian Telegraph Agency",
+    "Bulgarische Telegraphenagentur",
+    "Bulgarische Nachrichtenagentur"
+  ]
+}
+
+Before adding it, though, I would verify the historical German/French names, founding chronology, and QID. In particular, given our ATA discussion, I’d want to establish whether Bulgarische Nachrichtenagentur is sufficiently attested as a referential historical name to belong in annotation aliases, rather than only in search_aliases.
+
+If your occurrence is from Hamburger Echo 1925, BTA would be the first entity I’d investigate.
+
+
+
+This one should not be Xinhua. The visible text says:
+
+die innerchinesische Agentur China News Service meldete
+
+That is a distinct agency: China News Service (CNS), founded in 1952 and one of China’s state-level news agencies alongside Xinhua. Its traditional audience included overseas Chinese as well as Hong Kong, Macau, and Taiwan.  
+
+So for this review item I would choose m, and annotate the full proper name:
+
+China News Service → new entity, e.g. org.ent.pressagency.china-news-service
+
+The current prediction of just China → Xinhua is clearly wrong.
+
+I would add a seed roughly like:
+
+{
+  "canonical_id": "china-news-service",
+  "label": "org.ent.pressagency.china-news-service",
+  "display_name": "China News Service",
+  "aliases": [
+    "China News Service",
+    "CNS"
+  ],
+  "active_period": {
+    "start": "1952",
+    "end": null
+  }
+}
+
+The official CNS history confirms the agency was established in 1952; it also describes it as a state-level news agency.  
+
+For boundary policy, China News Service is the proper name, so keep the whole phrase, not merely China. I would also explicitly distinguish it from Xinhua in the annotation note, since the lexical overlap makes this an obvious recurrent false-positive source.
+
+This is definitely not CTK. Iskra is a real, distinct Polish press agency.
+
+The evidence is unusually good. The Polish State Archives catalogue has dedicated records for Iskra alongside Polska Agencja Telegraficzna and other agencies, including a file covering its correspondents, transmission of dispatches, etc. for 1933–1938.  
+
+Even better, a contemporary description of the Polish press identifies:
+
+l'agence „Iskra“
+
+and characterizes it as the information/publication center of the pro-government party, which fits Le Petit Parisien almost word for word: l'agence Iskra, proche des milieux gouvernementaux.  
+
+Contemporary Polish newspapers in 1938 likewise explicitly write agencji „Iskra“, Komunikat agencji „Iskra“, and biuletyn agencji „Iskra“.  
+
+So:
+
+m → Iskra → new org.ent.pressagency.iskra
+
+I would create a new seed rather than map it to PAT:
+
+{
+  "canonical_id": "iskra",
+  "label": "org.ent.pressagency.iskra",
+  "display_name": "Iskra",
+  "aliases": [
+    "Iskra"
+  ]
+}
+
+There is also an archival record naming it more fully Agencja Prasowa i Publicystyczna "Iskra" (“Press and Publicistic Agency Iskra”), so that looks promising as the expanded Polish name.  
+
+The 1938 French occurrence is therefore excellent annotation evidence:
+
+l'agence [Iskra], proche des milieux gouvernementaux
+
+→ annotate only Iskra, excluding generic l'agence.
+
+I would flag this one for a proper seed expansion: dates, full Polish name, director Mieczysław Ścierzyński (as given by the contemporary French source), aliases, and especially whether a Wikidata QID exists.
+
+
+
+This is a clear new entity, not DNB, TASS, or another existing German agency.
+
+m:
+
+* AFP → org.ent.pressagency.afp
+* Dena → new org.ent.pressagency.dena
+
+The text itself expands it unambiguously:
+
+der Deutschen Nachrichtenagentur „Dena"
+
+Historically, DENA (Deutsche Nachrichtenagentur) was the news agency of the American occupation zone. It developed from DANA (Deutsche Allgemeine Nachrichtenagentur) and operated under the DENA name from 1946/47 until it was merged with DPD and SÜDENA to form dpa in 1949. The official dpa history confirms DENA as one of the three agencies merged into dpa on 18 August 1949.  
+
+So the 20 January 1948 occurrence is exactly in its core operating period.
+
+I would annotate only Dena, not Deutschen Nachrichtenagentur, because the explicit proper short name is present and this follows our strip_short_name principle:
+
+der Deutschen Nachrichtenagentur [„Dena”]
+
+A useful initial seed would therefore be:
+
+{
+  "canonical_id": "dena",
+  "label": "org.ent.pressagency.dena",
+  "display_name": "Deutsche Nachrichtenagentur",
+  "aliases": [
+    "DENA",
+    "Dena",
+    "Deutsche Nachrichtenagentur",
+    "Deutsche Nachrichten-Agentur"
+  ],
+  "active_period": {
+    "start": "1946",
+    "end": "1949"
+  },
+  "boundary_policy": "strip_short_name"
+}
+
+One important disambiguation for the seed: DENA ≠ DNB. DNB was the Nazi-era Deutsches Nachrichtenbüro; DENA belongs to the postwar occupation-period reconstruction of the German agency system. It is a direct institutional predecessor of dpa.  
+
+There was confusingly also an unrelated Deutsche Nachrichtenagentur/Dena in Berlin in 1919–1923, so date should be part of the disambiguation metadata.  
+
+WAFA — candidate news-agency addition
+
+- Proposed label: org.ent.pressagency.wafa
+- Display name: Palestinian News & Information Agency (WAFA)
+- Candidate aliases: WAFA, Wafa, وفا
+- Founded in 1972. Agency history: https://french.wafa.ps/Home/AboutUs
+- Review item: radiostation-span:cookbook-snippet:EXP-1975-04-14-a-i0304
+- Annotate Wafa at token range 54:55. Exclude the description « L'agence palestinienne de presse » and the surrounding commas. The predicted Kol Yisrael label is incorrect.
+- Verify Wikipedia and Wikidata metadata before registering the seed, then revisit the snippet.
+
+Radio Belgique — candidate radio-station addition
+
+- Proposed label: org.ent.radiostation.radio-belgique
+- Review item: radiostation-span:cookbook-snippet:lematin-1925-09-17-a-i0006
+- Annotate the full printed name Radio Belgique in the Brussels programme listing. The predicted BBC span covers only Radio and is incorrect.
+- Leave Broadcasting suisse untagged unless contemporary evidence establishes it as a broadcaster name. LAUSAXXE is likely OCR for the location Lausanne.
+- The listing predates the creation of INR in 1930. Verify Radio Belgique's institutional history and alias scope before registering the seed.
+- Reference for the INR chronology: https://ds.static.rtbf.be/article/pdf/rtbf_rapportannuel2014_md150dpi-1436869525.pdf
+
+Mitteldeutscher Rundfunk (MDR) — candidate radio-station addition
+
+- Proposed label: org.ent.radiostation.mdr
+- Display name: Mitteldeutscher Rundfunk
+- Candidate aliases: Mitteldeutscher Rundfunk, MDR
+- OCR/search variant: Mittel Deutscher Rundfunk
+- Review evidence: the 2000 programme listing reads “Eté musical de la Mittel Deutscher Rundfunk.”
+- Once the label is registered, choose m and annotate the full visible span Mittel Deutscher Rundfunk. Preserve the printed spacing. The predicted Deutscher span and Deutschlandfunk label are incorrect.
+- The proposed entity is the regional public broadcaster serving Saxony, Saxony-Anhalt, and Thuringia. Verify the founding and broadcast dates and confirm the broadcaster-level scope before registering the seed.
+
+Radio Sofia — candidate radio-station addition
+
+- Proposed label: org.ent.radiostation.radio-sofia
+- Bulgarian National Radio documents foreign-language bulletins under the Radio Sofia name from 1945 to 1950. Its external service later became Radio Bulgaria. Confirm alias and service scope before registering the seed.
+- Review item: radiostation-span:cookbook-snippet:luxwort-1950-03-08-a-i0013
+- Once registered, keep AP at 10:11 as org.ent.pressagency.ap and annotate the full Radio Sofia span at 41:43 with the new label. The article identifies the Bulgarian broadcast source without specifying the service or broadcast language.
+- Sources: https://old-news.bnr.bg/en/post/101634109/the-fascinating-story-of-the-first-overseas-broadcasts-bnr and https://old-news.bnr.bg/en/post/100122605/dx-program-may-27-2011
+
+British United Press — candidate news-agency addition
+
+- Proposed label: org.ent.pressagency.british-united-press
+- Display name: British United Press
+- Review item: radiostation-span:cookbook-snippet:indeplux-1925-08-01-b-i0087
+- Proposed span: 57:60 United British Press. Preserve the visible word order.
+- The 1925 correspondent credit likely refers to British United Press. A 1923 trade report describes its news service and its access to United Press material. Verify the attribution and the scope of the relationship before registering a separate seed or revisiting the up-upi prediction.
+- Contemporary source: https://upload.wikimedia.org/wikipedia/commons/1/1f/Editor_and_Publisher_1923-01-13-_Vol_55_Iss_33_%28IA_sim_editor-publisher_1923-01-13_55_33%29.pdf
+
+Sender Freies Berlin (SFB) — candidate radio-station addition
+
+- Proposed label: org.ent.radiostation.sender-freies-berlin
+- Candidate aliases: Sender Freies Berlin, SFB
+- Review item: radiostation-span:cookbook-snippet:DTT-1975-02-28-a-i0167
+- Annotate the full printed name Sender Freies Berlin, excluding Der. The article credits SFB with airing a television commentary on 21 November 1974.
+- The predicted Freies span and Radio Free Europe label are incorrect. Revisit the snippet once the SFB seed is registered.
+
+Europe 1 — candidate radio-station addition
+
+- Proposed label: org.ent.radiostation.europe-1
+- Display name: Europe 1
+- Review item: radiostation-span:cookbook-snippet:FZG-1975-04-03-a-i0084
+- Annotate the full printed span Radio Europa 1, including the numeral. The article credits the station with interviewing Madame Binh.
+- The predicted Radio Europa span and Radio Free Europe label are incorrect. Revisit the snippet once the Europe 1 seed is registered.
+
+Agence khmère de presse — candidate historical news-agency addition
+
+- Review item: pressagency-span:DTT-1970-03-12-a-i0098#match-0
+- Visible span: 20:22 kambodschanische Nachrichtenagentur. The March 1970 source credit likely refers to Agence khmère de presse. A parallel report naming the agency for this incident would confirm the attribution.
+- Keep the item skipped pending verification. Determine whether to extend the existing org.ent.pressagency.akp seed before its current 1978 start or create a separate historical label.
+- Evidence: a 1966 UN document names the agency, and BULAC holds its 1971–1973 daily bulletins. Modern AKP describes its late-1970s re-establishment.
+- UN document: https://digitallibrary.un.org/record/604837/files/S_SUPP_1966_4--%5EOR_SC_1966_4%5E-FR.pdf?version=1
+- BULAC collection: https://www.bulac.fr/la-collection-de-periodiques-du-cambodge-un-corpus-exceptionnel/index.html
+- AKP account: https://akp.gov.kh/fr/post/detail/347996
+
+Agence Khmer Information (AKI) — candidate historical news-agency addition
+
+- Proposed label: org.ent.pressagency.aki
+- Display name: Agence Khmer Information
+- Candidate aliases: Agence Khmer Information, AKI. Require FUNK or clear Cambodian wire-service context for the acronym.
+- Review item: pressagency-span:FZG-1975-04-21-a-i0040#match-0
+- Annotate 43:44 AKI alone. Exclude the descriptive phrase kambodschanische Nachrichtenagentur. The 21 April 1975 article explicitly identifies AKI as FUNK's mouthpiece and credits it with announcing captured provincial capitals.
+- A 1971 report identifies AKI as a wire service whose dispatches had been transmitted by radioteletype since March 1971 and used by the Voice of FUNK. March 1971 documents transmission activity. Verify the foundation and end dates and seek Wikipedia and Wikidata metadata before registering a seed.
+- Keep this item skipped pending registration. Distinguish the FUNK wire service from the Voice of FUNK broadcaster, the post-1978 SPK/AKP seed, and the earlier Agence khmère de presse candidate.
+- Contemporary source: https://www.cia.gov/readingroom/docs/esau-53.pdf

@@ -14,6 +14,10 @@ FORBIDDEN_LABELS = {
     "org.ent.pressagency.pers.ind.articleauthor",
 }
 
+# Trainable agencies with no Wikipedia article may omit
+# wikipedia_url when they carry this status and cite metadata_sources.
+NO_WIKIPEDIA_STATUS = "metadata_enriched_no_wikipedia_article"
+
 
 def load_json(path: Path) -> list[dict[str, Any]]:
     with path.open("r", encoding="utf-8") as f:
@@ -57,7 +61,10 @@ def validate_rows(rows: list[dict[str, Any]], *, expected_prefix: str, source: P
 
         wikipedia_url = row.get("wikipedia_url")
         if trainable and expected_prefix == "org.ent.pressagency.":
-            if not (isinstance(wikipedia_url, str) and wikipedia_url.startswith("https://")):
+            if wikipedia_url is None and row.get("status") == NO_WIKIPEDIA_STATUS:
+                if not row.get("metadata_sources"):
+                    errors.append(f"{where}: {NO_WIKIPEDIA_STATUS} row must have metadata_sources")
+            elif not (isinstance(wikipedia_url, str) and wikipedia_url.startswith("https://")):
                 errors.append(f"{where}: trainable news-agency row must have wikipedia_url")
             description = row.get("description")
             if not (isinstance(description, str) and description.strip()):

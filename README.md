@@ -19,6 +19,32 @@ The workbench follows the control-plane pattern used by `impresso-frakturline-cl
 
 ## Released Versions
 
+### v2.1.0
+
+Dataset and model v2.1.0 were released in November 2026.
+
+**Dataset**
+
+- Repository: `impresso-project/impresso-mediaagencies-ner-dataset`
+- Revision: `v2.1.0`
+- Hugging Face commit: `26864265198dc5d68fd26018a134574a99caa249`
+- Git release snapshot: `data/releases/dataset-v2.1.0/`
+- Splits: 2572 train, 527 validation, 490 test documents.
+- Published dataset was verified against the Git release using the public-projection comparison workflow.
+
+**Model**
+
+- Repository: `impresso-project/mmbert-impresso-mediasources-ner`
+- Revision: `v2.1.0`
+- Hugging Face commit: `1dfa9a3e39d6792fc75f1d8f1089e2909bf14b83`
+- Base model: `impresso-project/mmbert-multilingual-impresso-continued-mlm`
+- Selected-checkpoint validation entity F1: `0.9290`
+- Held-out test entity F1: `0.8902`
+- Decoder: `first_subtoken_viterbi`
+- Runtime inference parity: `490/490` held-out test documents matched evaluator decoded BIO sequences exactly; reproduced `539/634/577` exact entities and test F1 `0.8901734104`.
+
+The released model was trained from the pinned published v2.1.0 dataset. Runtime parity was validated with the downloaded v2.1.0 model artifact and the v2.1.0 Git release test split. Detailed model provenance is recorded in `hf_model/model_provenance.json`.
+
 ### v2.0.0
 
 Dataset and model v2.0.0 were released in August 2026.
