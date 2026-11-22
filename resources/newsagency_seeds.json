@@ -112,7 +112,7 @@
         "SPK"
       ]
     },
-    "wikipedia_url": "https://en.wikipedia.org/wiki/Agence_Kampuchea_Press",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Agence_Kampuchea_Presse",
     "wikidata_url": "https://www.wikidata.org/wiki/Q4691980",
     "trainable": true,
     "status": "metadata_enriched",
@@ -165,7 +165,7 @@
     "metadata_sources": [
       {
         "type": "wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Agence_Kampuchea_Press"
+        "url": "https://en.wikipedia.org/wiki/Agence_Kampuchea_Presse"
       },
       {
         "type": "official-history",
@@ -434,7 +434,7 @@
     "label": "org.ent.pressagency.havas",
     "display_name": "Havas",
     "aliases": ["Havas", "Agence Havas"],
-    "wikipedia_url": "https://en.wikipedia.org/wiki/Havas",
+    "wikipedia_url": "https://fr.wikipedia.org/wiki/Agence_Havas",
     "wikidata_url": "https://www.wikidata.org/wiki/Q2826560",
     "trainable": true,
     "status": "metadata_enriched",
@@ -456,7 +456,7 @@
       },
       {
         "type": "wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Havas"
+        "url": "https://fr.wikipedia.org/wiki/Agence_Havas"
       }
     ],
     "agency_word_boundary_policy": {
@@ -511,7 +511,7 @@
     "display_name": "Domei Tsushin",
     "aliases": ["Domei", "Domei News Agency"],
     "search_aliases": ["Domei"],
-    "wikipedia_url": "https://en.wikipedia.org/wiki/Domei_Tsushin",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/D%C5%8Dmei_Tsushin",
     "wikidata_url": "https://www.wikidata.org/wiki/Q2913752",
     "trainable": true,
     "status": "metadata_enriched",
@@ -533,7 +533,7 @@
       },
       {
         "type": "wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Domei_Tsushin"
+        "url": "https://en.wikipedia.org/wiki/D%C5%8Dmei_Tsushin"
       }
     ],
     "agency_word_boundary_policy": {
@@ -547,7 +547,7 @@
     "label": "org.ent.pressagency.belga",
     "display_name": "Belga News Agency",
     "aliases": ["Belga", "Agence Belga"],
-    "wikipedia_url": "https://en.wikipedia.org/wiki/Belga_(news_agency)",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Belga_News_Agency",
     "wikidata_url": "https://www.wikidata.org/wiki/Q815453",
     "trainable": true,
     "status": "metadata_enriched",
@@ -569,7 +569,7 @@
       },
       {
         "type": "wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Belga_(news_agency)"
+        "url": "https://en.wikipedia.org/wiki/Belga_News_Agency"
       }
     ],
     "agency_word_boundary_policy": {
@@ -742,7 +742,7 @@
     "label": "org.ent.pressagency.dnb",
     "display_name": "Deutsches Nachrichtenburo",
     "aliases": ["DNB", "Deutsches Nachrichtenbuero"],
-    "wikipedia_url": "https://en.wikipedia.org/wiki/Deutsches_Nachrichtenb%C3%BCro",
+    "wikipedia_url": "https://de.wikipedia.org/wiki/Deutsches_Nachrichtenb%C3%BCro",
     "wikidata_url": "https://www.wikidata.org/wiki/Q1205856",
     "trainable": true,
     "status": "metadata_enriched",
@@ -764,7 +764,7 @@
       },
       {
         "type": "wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Deutsches_Nachrichtenb%C3%BCro"
+        "url": "https://de.wikipedia.org/wiki/Deutsches_Nachrichtenb%C3%BCro"
       }
     ],
     "agency_word_boundary_policy": {
@@ -1270,7 +1270,7 @@
     "label": "org.ent.pressagency.apa",
     "display_name": "Austria Presse Agentur",
     "aliases": ["APA", "Austria Press Agentur", "Austria Presse Agentur"],
-    "wikipedia_url": "https://en.wikipedia.org/wiki/Austria_Presse_Agentur",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Austria_Press_Agency",
     "wikidata_url": "https://www.wikidata.org/wiki/Q680662",
     "trainable": true,
     "status": "metadata_enriched",
@@ -1292,7 +1292,7 @@
       },
       {
         "type": "wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Austria_Presse_Agentur"
+        "url": "https://en.wikipedia.org/wiki/Austria_Press_Agency"
       },
       {
         "type": "official_history",
@@ -1531,7 +1531,7 @@
     "label": "org.ent.pressagency.europapress",
     "display_name": "Europapress",
     "aliases": ["Europapress", "Europapresz", "Europapr."],
-    "wikipedia_url": "https://de.wikipedia.org/wiki/Europapress",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Europa_Press",
     "wikidata_url": "https://www.wikidata.org/wiki/Q3060712",
     "trainable": true,
     "status": "metadata_enriched",
@@ -1553,7 +1553,7 @@
       },
       {
         "type": "wikipedia",
-        "url": "https://de.wikipedia.org/wiki/Europapress"
+        "url": "https://en.wikipedia.org/wiki/Europa_Press"
       }
     ],
     "agency_word_boundary_policy": {

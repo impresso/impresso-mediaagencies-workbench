@@ -638,7 +638,7 @@
       "Radio-Télévision Suisse",
       "Radio-Television Suisse"
     ],
-    "wikipedia_url": "https://en.wikipedia.org/wiki/Radio_Suisse_Romande",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Radio_T%C3%A9l%C3%A9vision_Suisse",
     "wikidata_url": "https://www.wikidata.org/wiki/Q3416973",
     "trainable": true,
     "status": "metadata_enriched",
@@ -660,7 +660,7 @@
       },
       {
         "type": "wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Radio_Suisse_Romande"
+        "url": "https://en.wikipedia.org/wiki/Radio_T%C3%A9l%C3%A9vision_Suisse"
       }
     ]
   },
