@@ -398,8 +398,8 @@
     "label": "org.ent.pressagency.extel",
     "display_name": "Exchange Telegraph Company",
     "aliases": ["Extel", "Exchange Telegraph", "Agence Extel"],
-    "wikipedia_url": "https://en.wikipedia.org/wiki/Exchange_Telegraph_Company",
-    "wikidata_url": "https://www.wikidata.org/wiki/Q3520792",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Extel",
+    "wikidata_url": "https://www.wikidata.org/wiki/Q1525848",
     "trainable": true,
     "status": "metadata_enriched",
     "description": "British Exchange Telegraph Company, founded in London in 1872 and later widely known as Extel. It supplied news and especially financial/market information; historical snippets may contain Exchange, Exchange Telegraph, or Extel.",
@@ -416,11 +416,16 @@
     "metadata_sources": [
       {
         "type": "wikidata",
-        "url": "https://www.wikidata.org/wiki/Q3520792"
+        "url": "https://www.wikidata.org/wiki/Q1525848"
       },
       {
         "type": "wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Exchange_Telegraph_Company"
+        "url": "https://en.wikipedia.org/wiki/Extel"
+      },
+      {
+        "type": "wikidata-related",
+        "url": "https://www.wikidata.org/wiki/Q3520792",
+        "note": "Separate, sparsely described item for The Exchange Telegraph Company (frwiki only); possible duplicate of Q1525848."
       }
     ],
     "agency_word_boundary_policy": {
@@ -1311,7 +1316,7 @@
     "display_name": "Deutscher Depeschendienst / Deutscher Auslands-Depeschendienst",
     "aliases": ["DDP", "DAPD", "DDP-DAPD", "Deutscher Depeschendienst"],
     "wikipedia_url": "https://de.wikipedia.org/wiki/Deutscher_Depeschendienst",
-    "wikidata_url": "https://www.wikidata.org/wiki/Q265330",
+    "wikidata_url": "https://www.wikidata.org/wiki/Q1204705",
     "trainable": true,
     "status": "metadata_enriched",
     "description": "German ddp/dapd label for the Deutscher Depeschendienst lineage and the later dapd Nachrichtenagentur. ddp originated in 1971 from former UPI-service staff; dapd was formed around 2010 from ddp and the German AP service and went bankrupt in 2012/2013.",
@@ -1340,11 +1345,20 @@
     "metadata_sources": [
       {
         "type": "wikidata",
-        "url": "https://www.wikidata.org/wiki/Q265330"
+        "url": "https://www.wikidata.org/wiki/Q1204705"
       },
       {
         "type": "wikipedia",
         "url": "https://de.wikipedia.org/wiki/Deutscher_Depeschendienst"
+      },
+      {
+        "type": "wikidata-successor",
+        "url": "https://www.wikidata.org/wiki/Q265330",
+        "note": "dapd Nachrichtenagentur (2010-2013), formed from ddp and the German AP service."
+      },
+      {
+        "type": "wikipedia-successor",
+        "url": "https://de.wikipedia.org/wiki/Dapd_Nachrichtenagentur"
       }
     ],
     "agency_word_boundary_policy": {
