@@ -1,27 +1,52 @@
 {
   "base_model": "impresso-project/mmbert-multilingual-impresso-continued-mlm",
   "dataset": {
-    "commit": "a7ac5dc1ec0dd92ae848dbccd258aa0361830da3",
+    "commit": "26864265198dc5d68fd26018a134574a99caa249",
     "repository": "impresso-project/impresso-mediaagencies-ner-dataset",
-    "revision": "v2.0.0"
+    "revision": "v2.1.0"
   },
   "decoder": "first_subtoken_viterbi",
   "evaluation": {
     "held_out_test": {
-      "entity_correct": 529,
-      "entity_f1": 0.8981324278438031,
-      "entity_gold": 612,
-      "entity_predicted": 566,
-      "entity_precision": 0.9346289752650176,
-      "entity_recall": 0.8643790849673203
+      "entity_correct": 539,
+      "entity_f1": 0.8901734104046243,
+      "entity_gold": 634,
+      "entity_precision": 0.9341421143847487,
+      "entity_predicted": 577,
+      "entity_recall": 0.8501577287066246
+    },
+    "local_inference_parity": {
+      "documents": 490,
+      "matching_documents": 490,
+      "metrics_match": true,
+      "mismatches": 0
     },
     "selected_checkpoint_validation": {
-      "entity_correct": 500,
-      "entity_f1": 0.9285051067780873,
-      "entity_gold": 545,
-      "entity_predicted": 519,
-      "entity_precision": 0.9398496240601504,
-      "entity_recall": 0.9174311926605505
+      "entity_correct": 530,
+      "entity_f1": 0.9290096406660825,
+      "entity_gold": 587,
+      "entity_precision": 0.9566787003610109,
+      "entity_predicted": 554,
+      "entity_recall": 0.9028960817717206
+    },
+    "validation_decoder_entity_f1": {
+      "all_subtoken": 0.9026086956521738,
+      "all_subtoken_viterbi": 0.9246935201401052,
+      "first_subtoken": 0.8994800693240902,
+      "first_subtoken_viterbi": 0.9290096406660825
+    },
+    "published_artifact_inference_parity": {
+      "model_commit": "1dfa9a3e39d6792fc75f1d8f1089e2909bf14b83",
+      "model_revision": "v2.1.0",
+      "verified_on": "2026-11-23",
+      "documents": 490,
+      "matching_documents": 490,
+      "mismatches": 0,
+      "metrics_match": true,
+      "entity_correct": 539,
+      "entity_gold": 634,
+      "entity_predicted": 577,
+      "entity_f1": 0.8901734104046243
     }
   },
   "label_supervision": {
@@ -29,16 +54,17 @@
     "subtoken_labeling": "all_subtokens_b_to_i"
   },
   "model": {
-    "commit": "5f600305a86b90d5467c5d71b827e0f33872776c",
-    "previous_commit": "9899ad960b9bc310ee51cd7ee658fd3882b6b140",
+    "commit": null,
+    "previous_commit": "5f600305a86b90d5467c5d71b827e0f33872776c",
     "repository": "impresso-project/mmbert-impresso-mediasources-ner",
-    "revision": "v2.0.1",
-    "runtime_update_note": "v2.0.1 updates the Hugging Face custom pipeline runtime for the existing v2.0.0 trained weights; no retraining was performed."
+    "revision": "v2.1.0"
   },
-  "publication_workbench_commit": "429a3767288abd16a43b2f7996453f73df350c7c",
-  "selected_checkpoint": "models.d/newsagency_radiostation_modernbert_v2.0.0-hf-verification/best",
-  "training_code_commit": null,
-  "training_code_commit_note": "The completed v2.0.0 training run did not record a Git SHA in training_start_report.json; do not treat the publication/workbench commit as the exact training-code commit.",
-  "training_config": "configs/model-v2.0.0-4layers-hf-verification.mk",
-  "unfreeze_top_layers": 4
+  "publication_workbench_commit": null,
+  "seed": 42,
+  "selected_checkpoint": "models.d/newsagency_radiostation_modernbert_v2.1.0-hf-verification/best",
+  "selected_epoch": 11,
+  "training_code_commit": "64f80644b0477dd0743d06e36c2a66b0d9d17764",
+  "training_code_commit_note": "The training start report recorded a dirty worktree.",
+  "training_config": "configs/model-v2.1.0-hf-verification.mk",
+  "unfreeze_top_layers": 3
 }

@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := help
 
-PYTHON ?= python3
+# Prefer the project virtualenv so commands work without activating it.
+PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 ARGS ?=
 CFG ?= configs/model-v2.0.0.mk
 
