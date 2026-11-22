@@ -31,6 +31,7 @@ The repository name uses "media sources" because the label space may later grow 
 - Training workbench commit: `64f80644b0477dd0743d06e36c2a66b0d9d17764` (dirty worktree at training start)
 - Training config: `configs/model-v2.1.0-hf-verification.mk`
 - Model revision: `v2.1.0`
+- Published model commit: `ebba15a1f4ddda45ef2e6d4487d6df67c66a34e7`
 - Base model: `impresso-project/mmbert-multilingual-impresso-continued-mlm`
 - Upstream base: `jhu-clsp/mmBERT-base`
 - License: MIT
@@ -63,7 +64,7 @@ The model configuration records the annotation tokenization, subtoken supervisio
 | Validation | 0.9567 | 0.9029 | 0.9290 | 530 / 587 / 554 |
 | Held-out test | 0.9341 | 0.8502 | 0.8902 | 539 / 634 / 577 |
 
-The local custom pipeline reproduced the evaluator's decoded BIO labels on all 490 test documents, with zero mismatches and identical entity and token metrics. Verification of the published artifact is pending.
+The local custom pipeline reproduced the evaluator's decoded BIO labels on all 490 test documents, with zero mismatches and identical entity and token metrics. The same parity check passed on the published model commit using the workbench runtime pipeline.
 
 ## Intended Use
 
