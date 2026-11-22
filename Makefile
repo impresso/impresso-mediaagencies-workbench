@@ -133,7 +133,7 @@ help-anno:
 	@echo "  make integrate-snippets                      Split, preview, then promote reviewed snippets"
 	@echo ""
 	@echo "Useful overrides:"
-	@echo "  MEDIA_FAMILY=pressagency|radiostation, REVIEWER=$$USER, SNIPPET_REVIEW_MAX_ITEMS=0 (all), MEDIA_SNIPPETS=..."
+	@echo "  MEDIA_FAMILY=pressagency|radiostation, REVIEWER=$$USER, SNIPPET_REVIEW_MAX_ITEMS=0 (all), MEDIA_SNIPPETS=..., IMPRESSO_APP_URL=https://dev.impresso-project.ch"
 	@echo "  MEDIA_LABELS='org.ent.pressagency.reuters', MEDIA_SAMPLE_MODE=focused|coverage|surface"
 	@echo "  COOKBOOK_PREDICTIONS=path/to/predictions.jsonl, COOKBOOK_IMPRESSO_API_URL=https://dev.impresso-project.ch/public-api/v1, COOKBOOK_SNIPPET_MIN_CONFIDENCE=0.30, COOKBOOK_SNIPPET_MAX_CONFIDENCE=0.80, COOKBOOK_SNIPPET_CONTEXT_CHARS=256, COOKBOOK_SNIPPET_LIMIT=0, COOKBOOK_SNIPPET_MAX_FETCH_FAILURES=25, COOKBOOK_SNIPPET_SELECTION_STRATEGY=newspaper-round-robin|random|input, COOKBOOK_SNIPPET_SELECTION_SEED=42, COOKBOOK_SNIPPET_MAX_PER_NEWSPAPER=3, COOKBOOK_SNIPPET_HEALTHCHECK_CONTENT_ITEM=NZZ-1794-08-09-a-i0002, COOKBOOK_SNIPPET_SMOKE_CONTENT_ITEMS=10, COOKBOOK_SNIPPET_HTTP_TIMEOUT=30, COOKBOOK_SNIPPET_HTTP_RETRIES=3, COOKBOOK_SNIPPET_LOG_LEVEL=INFO, COOKBOOK_SNIPPET_DIAGNOSTIC_EXAMPLES=10"
 	@echo "  REVIEW_COVERAGE_JSON=$(ANNOTATION_STATS_JSON), REVIEW_ONLY_UNDER_TARGET=false (set true for coverage-only review)"
@@ -516,7 +516,7 @@ audit-missing-spans:
 review-missing-spans:
 	@echo "Reviewing target-specific missing-span suggestions and writing append-only decisions."
 	@test -n "$(MISSING_SPAN_TARGET_LABEL)" || { echo "MISSING_SPAN_TARGET_LABEL is required, e.g. MISSING_SPAN_TARGET_LABEL=org.ent.pressagency.ata"; exit 1; }
-	$(PYTHON) -m lib.span_patch_review --candidates "$(MISSING_SPAN_CANDIDATES)" --decisions "$(MISSING_SPAN_DECISIONS)" --audit-id "$(MISSING_SPAN_AUDIT_ID)" --reviewer "$(REVIEWER)" --target-label "$(MISSING_SPAN_TARGET_LABEL)" --limit "$(REVIEW_MAX_ITEMS)" --summary-json "$(MISSING_SPAN_REVIEW_SUMMARY_JSON)" --queue-jsonl "$(MISSING_SPAN_QUEUE_JSONL)" $(ARGS)
+	$(PYTHON) -m lib.span_patch_review --candidates "$(MISSING_SPAN_CANDIDATES)" --decisions "$(MISSING_SPAN_DECISIONS)" --audit-id "$(MISSING_SPAN_AUDIT_ID)" --reviewer "$(REVIEWER)" --target-label "$(MISSING_SPAN_TARGET_LABEL)" --limit "$(REVIEW_MAX_ITEMS)" --summary-json "$(MISSING_SPAN_REVIEW_SUMMARY_JSON)" --queue-jsonl "$(MISSING_SPAN_QUEUE_JSONL)" --impresso-app-url "$(IMPRESSO_APP_URL)" $(ARGS)
 	@echo "Next steps:"
 	@echo "  # Apply accepted missing-span decisions to a patched split."
 	@echo "  make apply-missing-spans MISSING_SPAN_TARGET_LABEL=$(MISSING_SPAN_TARGET_LABEL) MISSING_SPAN_SPLIT=$(MISSING_SPAN_SPLIT)"
@@ -576,7 +576,7 @@ review-existing-spans:
 	@echo "Reviewing existing-span audit candidates and writing append-only decisions."
 	@test -n "$(SPAN_BOUNDARY_TARGET_LABEL)" || { echo "SPAN_BOUNDARY_TARGET_LABEL is required, e.g. SPAN_BOUNDARY_TARGET_LABEL=org.ent.pressagency.havas"; exit 1; }
 	@test "$(SPAN_BOUNDARY_SPLIT_KEY)" = "train" -o "$(SPAN_BOUNDARY_SPLIT_KEY)" = "validation" -o "$(SPAN_BOUNDARY_SPLIT_KEY)" = "test" || { echo "SPAN_BOUNDARY_SPLIT must be train, validation/dev, or test"; exit 1; }
-	$(PYTHON) -m lib.span_patch_review --candidates "$(SPAN_BOUNDARY_CANDIDATES)" --decisions "$(SPAN_BOUNDARY_DECISIONS)" --audit-id "$(SPAN_BOUNDARY_AUDIT_ID)" --reviewer "$(REVIEWER)" --target-label "$(SPAN_BOUNDARY_TARGET_LABEL)" --limit "$(REVIEW_MAX_ITEMS)" --summary-json "$(SPAN_BOUNDARY_REVIEW_SUMMARY_JSON)" --queue-jsonl "$(SPAN_BOUNDARY_QUEUE_JSONL)" $(ARGS)
+	$(PYTHON) -m lib.span_patch_review --candidates "$(SPAN_BOUNDARY_CANDIDATES)" --decisions "$(SPAN_BOUNDARY_DECISIONS)" --audit-id "$(SPAN_BOUNDARY_AUDIT_ID)" --reviewer "$(REVIEWER)" --target-label "$(SPAN_BOUNDARY_TARGET_LABEL)" --limit "$(REVIEW_MAX_ITEMS)" --summary-json "$(SPAN_BOUNDARY_REVIEW_SUMMARY_JSON)" --queue-jsonl "$(SPAN_BOUNDARY_QUEUE_JSONL)" --impresso-app-url "$(IMPRESSO_APP_URL)" $(ARGS)
 	@echo "Next step:"
 	@echo "  # Apply reviewed existing-span decisions."
 	@echo "  make apply-existing-spans SPAN_BOUNDARY_TARGET_LABEL=$(SPAN_BOUNDARY_TARGET_LABEL) SPAN_BOUNDARY_SPLIT=$(SPAN_BOUNDARY_SPLIT_KEY)"
@@ -674,7 +674,7 @@ integrate-agency-word-boundaries: apply-agency-word-boundaries promote-agency-wo
 
 review-span-patches:
 	@echo "Reviewing audit-suggested span patches and writing append-only decisions."
-	$(PYTHON) -m lib.span_patch_review --candidates "$(SPAN_PATCH_CANDIDATES)" --decisions "$(SPAN_PATCH_DECISIONS)" --audit-id "$(SPAN_PATCH_AUDIT_ID)" --reviewer "$(REVIEWER)" --target-label "$(SPAN_PATCH_TARGET_LABEL)" --limit "$(REVIEW_MAX_ITEMS)" --summary-json "$(SPAN_PATCH_SUMMARY_JSON)" --queue-jsonl "$(SPAN_PATCH_QUEUE_JSONL)" $(ARGS)
+	$(PYTHON) -m lib.span_patch_review --candidates "$(SPAN_PATCH_CANDIDATES)" --decisions "$(SPAN_PATCH_DECISIONS)" --audit-id "$(SPAN_PATCH_AUDIT_ID)" --reviewer "$(REVIEWER)" --target-label "$(SPAN_PATCH_TARGET_LABEL)" --limit "$(REVIEW_MAX_ITEMS)" --summary-json "$(SPAN_PATCH_SUMMARY_JSON)" --queue-jsonl "$(SPAN_PATCH_QUEUE_JSONL)" --impresso-app-url "$(IMPRESSO_APP_URL)" $(ARGS)
 	@echo "Next step:"
 	@echo "  # Apply accepted or corrected span patches."
 	@echo "  make apply-span-patches EMPTY_DOC_SPLIT=$(EMPTY_DOC_SPLIT)"
@@ -1101,14 +1101,14 @@ suggest-media-snippet-spans:
 
 review-media-snippet-spans:
 	@echo "Reviewing $(MEDIA_FAMILY) snippet span suggestions and writing append-only decisions."
-	$(PYTHON) -m lib.review_media_snippets --family "$(MEDIA_FAMILY)" --input "$(MEDIA_SCORED_SNIPPETS)" --output "$(MEDIA_REVIEWED_SNIPPETS)" --decisions "$(MEDIA_SNIPPET_DECISIONS)" --reviewer "$(REVIEWER)" --limit "$(SNIPPET_REVIEW_MAX_ITEMS)" --label-metadata "$(MEDIA_LABEL_METADATA)" --review-prefix "$(MEDIA_REVIEW_PREFIX)" --coverage-json "$(REVIEW_COVERAGE_JSON)" $(if $(filter true,$(REVIEW_ONLY_UNDER_TARGET)),--only-under-target,) $(ARGS)
+	$(PYTHON) -m lib.review_media_snippets --family "$(MEDIA_FAMILY)" --input "$(MEDIA_SCORED_SNIPPETS)" --output "$(MEDIA_REVIEWED_SNIPPETS)" --decisions "$(MEDIA_SNIPPET_DECISIONS)" --reviewer "$(REVIEWER)" --limit "$(SNIPPET_REVIEW_MAX_ITEMS)" --label-metadata "$(MEDIA_LABEL_METADATA)" --review-prefix "$(MEDIA_REVIEW_PREFIX)" --coverage-json "$(REVIEW_COVERAGE_JSON)" --impresso-app-url "$(IMPRESSO_APP_URL)" $(if $(filter true,$(REVIEW_ONLY_UNDER_TARGET)),--only-under-target,) $(ARGS)
 	@echo "Next step:"
 	@echo "  # Split accepted snippets into train/validation/test."
 	@echo "  make split-media-snippets MEDIA_FAMILY=$(MEDIA_FAMILY)"
 
 review-auto-media-snippet-spans:
 	@echo "Auditing auto-accepted $(MEDIA_FAMILY) snippet spans and writing append-only decisions."
-	$(PYTHON) -m lib.review_media_snippets --family "$(MEDIA_FAMILY)" --input "$(MEDIA_SCORED_SNIPPETS)" --output "$(MEDIA_REVIEWED_SNIPPETS)" --decisions "$(MEDIA_SNIPPET_DECISIONS)" --reviewer "$(REVIEWER)" --limit "$(SNIPPET_REVIEW_MAX_ITEMS)" --label-metadata "$(MEDIA_LABEL_METADATA)" --review-prefix "$(MEDIA_REVIEW_PREFIX)" --review-status auto_accepted $(ARGS)
+	$(PYTHON) -m lib.review_media_snippets --family "$(MEDIA_FAMILY)" --input "$(MEDIA_SCORED_SNIPPETS)" --output "$(MEDIA_REVIEWED_SNIPPETS)" --decisions "$(MEDIA_SNIPPET_DECISIONS)" --reviewer "$(REVIEWER)" --limit "$(SNIPPET_REVIEW_MAX_ITEMS)" --label-metadata "$(MEDIA_LABEL_METADATA)" --review-prefix "$(MEDIA_REVIEW_PREFIX)" --review-status auto_accepted --impresso-app-url "$(IMPRESSO_APP_URL)" $(ARGS)
 	@echo "Next step:"
 	@echo "  # Split accepted snippets into train/validation/test."
 	@echo "  make split-media-snippets MEDIA_FAMILY=$(MEDIA_FAMILY)"
@@ -1148,7 +1148,7 @@ integrate-snippets:
 
 review-curation:
 	@echo "Reviewing pending gold-vs-prediction disagreement items in the terminal."
-	$(PYTHON) -m lib.review_curation --disagreements "$(CURATION_OUTPUT_DIR)/review/todo_disagreements.jsonl" --decisions "$(CURATION_OUTPUT_DIR)/review/decisions.jsonl" --reviewer "$(REVIEWER)" $(ARGS)
+	$(PYTHON) -m lib.review_curation --disagreements "$(CURATION_OUTPUT_DIR)/review/todo_disagreements.jsonl" --decisions "$(CURATION_OUTPUT_DIR)/review/decisions.jsonl" --reviewer "$(REVIEWER)" --impresso-app-url "$(IMPRESSO_APP_URL)" $(ARGS)
 	@echo "Next step:"
 	@echo "  # Validate reviewed disagreement decisions."
 	@echo "  make validate-curation"
