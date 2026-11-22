@@ -112,12 +112,17 @@ def test_radiostation_wikidata_qids_for_sampler_seed_rows() -> None:
     assert by_id["radio-prague"]["wikidata_url"] == "https://www.wikidata.org/wiki/Q1939322"
 
 
-def test_rfe_and_radio_liberty_have_broader_wikidata_mapping_notes() -> None:
+def test_rfe_and_radio_liberty_map_to_their_pre_1976_wikidata_items() -> None:
     rows = load_json(ROOT / "resources" / "radiostation_seeds.json")
     by_id = {row["canonical_id"]: row for row in rows}
 
-    for canonical_id in ("radio-free-europe", "radio-liberty"):
+    expected = {
+        "radio-free-europe": "https://www.wikidata.org/wiki/Q12146750",
+        "radio-liberty": "https://www.wikidata.org/wiki/Q115411323",
+    }
+    for canonical_id, wikidata_url in expected.items():
         row = by_id[canonical_id]
-        assert row["wikidata_url"] == "https://www.wikidata.org/wiki/Q485500"
-        assert row["wikidata_mapping"] == "broader"
-        assert "combined Radio Free Europe/Radio Liberty organization" in row["wikidata_note"]
+        assert row["wikidata_url"] == wikidata_url
+        assert row["wikidata_mapping"] == "exact"
+        assert "Q485500" in row["wikidata_note"]
+        assert "combined Radio Free Europe/Radio Liberty successor" in row["wikidata_note"]

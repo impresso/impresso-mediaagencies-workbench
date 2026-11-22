@@ -12,7 +12,7 @@
       "Radio Liberty Munich"
     ],
     "wikipedia_url": "https://en.wikipedia.org/wiki/Radio_Free_Europe/Radio_Liberty",
-    "wikidata_url": "https://www.wikidata.org/wiki/Q485500",
+    "wikidata_url": "https://www.wikidata.org/wiki/Q115411323",
     "description": "US-funded international broadcaster directed at audiences in the Soviet Union. Founded in 1951 by the American Committee for the Liberation of the Peoples of Russia (Amcomlib). Initially known as Radio Liberation from Bolshevism and later Radio Liberation before adopting the name Radio Liberty. It operated separately from Radio Free Europe until their merger in 1976.",
     "annotation_note": "Annotate Radio Liberty, Radio-Liberty, Radio Liberation, and related historical forms when they refer to the broadcaster, a broadcast source, a programme, a transmission, or institutional radio activity. Do not normalize Radio Liberty to Radio Free Europe in pre-1976 contexts; they were separate broadcasters.",
     "active_period": {
@@ -49,8 +49,8 @@
     ],
     "trainable": true,
     "status": "metadata_enriched",
-    "wikidata_mapping": "broader",
-    "wikidata_note": "Wikidata Q485500 represents the combined Radio Free Europe/Radio Liberty organization. This seed represents Radio Liberty as a distinct pre-1976 broadcaster."
+    "wikidata_mapping": "exact",
+    "wikidata_note": "Wikidata Q115411323 represents the pre-1976 Radio Liberty broadcaster (sparse item, no sitelinks). Q485500 is the combined Radio Free Europe/Radio Liberty successor (1976 merger); the wikipedia_url points to its enwiki article, which covers the history of both broadcasters."
   },
   {
     "canonical_id": "polskie-radio",
@@ -303,11 +303,11 @@
       "en": ["Radio Free Europe"]
     },
     "wikipedia_url": "https://en.wikipedia.org/wiki/Radio_Free_Europe/Radio_Liberty",
-    "wikidata_url": "https://www.wikidata.org/wiki/Q485500",
+    "wikidata_url": "https://www.wikidata.org/wiki/Q12146750",
     "trainable": true,
     "status": "seed_from_sampler",
-    "wikidata_mapping": "broader",
-    "wikidata_note": "Wikidata Q485500 represents the combined Radio Free Europe/Radio Liberty organization and also covers historical Radio Free Europe in its multilingual sitelinks. This seed represents Radio Free Europe as a distinct pre-1976 broadcaster."
+    "wikidata_mapping": "exact",
+    "wikidata_note": "Wikidata Q12146750 represents the pre-1976 Radio Free Europe broadcaster (sparse item, ukwiki only). Q485500 is the combined Radio Free Europe/Radio Liberty successor (1976 merger); the wikipedia_url points to its enwiki article, which covers the history of both broadcasters."
   },
   {
     "canonical_id": "deutsche-welle",
@@ -638,8 +638,8 @@
       "Radio-Télévision Suisse",
       "Radio-Television Suisse"
     ],
-    "wikipedia_url": "https://en.wikipedia.org/wiki/Radio_T%C3%A9l%C3%A9vision_Suisse",
-    "wikidata_url": "https://www.wikidata.org/wiki/Q3416973",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Radio_Suisse_Romande",
+    "wikidata_url": "https://www.wikidata.org/wiki/Q623585",
     "trainable": true,
     "status": "metadata_enriched",
     "description": "Swiss public broadcaster for French-speaking Switzerland. Radio Suisse Romande (RSR), founded in 1922 as a radio unit of SRG SSR, merged with Télévision Suisse Romande in 2010 to form Radio Télévision Suisse (RTS), covering radio, television, and online services.",
@@ -656,10 +656,20 @@
     "metadata_sources": [
       {
         "type": "wikidata",
-        "url": "https://www.wikidata.org/wiki/Q3416973"
+        "url": "https://www.wikidata.org/wiki/Q623585",
+        "note": "Radio suisse romande (RSR), the radio unit before the 2010 merger."
       },
       {
         "type": "wikipedia",
+        "url": "https://en.wikipedia.org/wiki/Radio_Suisse_Romande"
+      },
+      {
+        "type": "wikidata-successor",
+        "url": "https://www.wikidata.org/wiki/Q3416973",
+        "note": "Radio Télévision Suisse (RTS), formed in 2010 from RSR and Télévision Suisse Romande."
+      },
+      {
+        "type": "wikipedia-successor",
         "url": "https://en.wikipedia.org/wiki/Radio_T%C3%A9l%C3%A9vision_Suisse"
       }
     ]
