@@ -425,7 +425,7 @@
       {
         "type": "wikidata-related",
         "url": "https://www.wikidata.org/wiki/Q3520792",
-        "note": "Separate, sparsely described item for The Exchange Telegraph Company (frwiki only); possible duplicate of Q1525848."
+        "note": "Duplicate item for The Exchange Telegraph Company (frwiki only), marked on Wikidata with P460 (said to be the same as) Q1525848. Holds the Library of Congress (n00067833) and VIAF (125454017) IDs until the items are merged."
       }
     ],
     "agency_word_boundary_policy": {
