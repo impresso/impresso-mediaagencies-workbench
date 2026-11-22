@@ -2,19 +2,15 @@
 ENTWURF für de.wikipedia.org – Lemma: "Centre d’Information de Presse"
 Stand 2026-11-22. Die drei APIC-Artikel (1994-06-05, 1994-06-08, 2001-12-17) wurden gegen den Text geprüft.
 Noch offen (PRÜFEN):
-* KADOC-Katalogeintrag, Encyclopedie Vlaamse Beweging, CegeSoma-PDF und CathoBel waren per Skript nicht abrufbar → im Browser prüfen.
-* CegeSoma: Name des Rezensenten ergänzen.
-* Gaston Claes: Gibt es einen de-Artikel? Sonst ohne Link lassen.
+* Gaston Claes (ab 1949 Übersetzer/Redaktor) vorerst entfernt: Quelle encyclopedievlaamsebeweging.be/nl/claes-gaston nicht erreichbar, nicht archiviert.
 * Nach Veröffentlichung: Sitelink auf Wikidata Q142245483 setzen.
 -->
-Das '''Centre d’Information de Presse''' ('''CIP'''; [[Niederländische Sprache|niederländisch]] ''Centrum voor Informatie aan de Pers'') war eine katholische [[Nachrichtenagentur]] in [[Belgien]] mit Sitz in [[Brüssel]]. Die 1944 gegründete Agentur war auf religiöse Nachrichten spezialisiert. 1991 wurde sie in zwei eigenständige Organisationen für den französisch- und den niederländischsprachigen Landesteil aufgeteilt. Die französischsprachige Agentur stellte ihre Tätigkeit Ende 2001 ein.
+Das '''Centre d’Information de Presse''' ('''CIP'''; [[Niederländische Sprache|niederländisch]] ''Centrum voor Informatie aan de Pers'') war eine katholische [[Nachrichten- und Presseagentur|Nachrichtenagentur]] in [[Belgien]] mit Sitz in [[Brüssel]]. Die 1944 gegründete Agentur war auf religiöse Nachrichten spezialisiert. 1991 wurde sie in zwei eigenständige Organisationen für den französisch- und den niederländischsprachigen Landesteil aufgeteilt. Die französischsprachige Agentur stellte ihre Tätigkeit Ende 2001 ein.
 
 == Geschichte ==
 Das CIP wurde kurz nach der Befreiung Belgiens 1944 von den katholischen Zeitungen des Landes mit Unterstützung der kirchlichen Behörden gegründet.<ref name="apic2001" /><ref name="apic1994a" /> Es war als Verein ohne Gewinnzweck (''asbl'') organisiert; dem Verwaltungsrat gehörten Vertreter der Gründerzeitungen und des belgischen Episkopats an.<ref name="apic2001" />
 
-Die Agentur belieferte Zeitungen, Institutionen und Einzelpersonen mit religiösen Nachrichten und gab ein wöchentliches Bulletin heraus.<ref name="apic1994a" /><ref name="apic2001" /> Sie arbeitete mit anderen katholischen Nachrichtenagenturen zusammen, besonders eng mit der Schweizer [[Katholische Internationale Presseagentur|Katholischen Internationalen Presseagentur]] (KIPA/APIC) in [[Freiburg im Üechtland]], mit der sie einen ständigen Korrespondenten in Rom unterhielt.<ref name="apic1994b" /> 1967 war das CIP an der Gründung der kongolesischen katholischen Agentur DIA (''Documentation et Information Africaine'') in [[Kinshasa]] beteiligt.<ref name="apic2001" />
-
-1949 trat Gaston Claes als Übersetzer in die Agentur ein und wurde kurz darauf Redaktor.<ref name="evb_claes" />
+Die Agentur belieferte Zeitungen, Institutionen und Einzelpersonen mit religiösen Nachrichten und gab ein wöchentliches Bulletin heraus.<ref name="apic1994a" /><ref name="apic2001" /> Sie arbeitete mit anderen katholischen Nachrichtenagenturen zusammen, besonders eng mit der Schweizer [[Katholische internationale Presseagentur|Katholischen Internationalen Presseagentur]] (KIPA/APIC) in [[Freiburg im Üechtland]], mit der sie einen ständigen Korrespondenten in Rom unterhielt.<ref name="apic1994b" /> 1967 war das CIP an der Gründung der kongolesischen katholischen Agentur DIA (''Documentation et Information Africaine'') in [[Kinshasa]] beteiligt.<ref name="apic2001" />
 
 1991 wurde das CIP in zwei eigenständige Institutionen aufgeteilt: Die französischsprachige Agentur blieb in Brüssel, die niederländischsprachige Redaktion zog nach [[Antwerpen]].<ref name="apic1994b" /><ref name="apic2001" /> Die flämische Agentur stellte ihre Tätigkeit wenig später ein, unter anderem nach dem Wegfall einer großen katholischen Tageszeitung als Abonnentin.<ref name="apic2001" />
 
@@ -23,11 +19,10 @@ Am 6. Juni 1994 beging das CIP in Brüssel sein 50-jähriges Bestehen im Beisein
 Wirtschaftliche Schwierigkeiten und das abnehmende Interesse der belgischen Presse an religiösen Nachrichten setzten auch die französischsprachige Agentur unter Druck. Nachdem die Tageszeitung ''[[La Libre Belgique]]'' ihr Abonnement gekündigt hatte, beschloss eine außerordentliche Generalversammlung am 12. Dezember 2001 die Auflösung des Vereins zum 31. Dezember 2001.<ref name="apic2001" />
 
 == Personen ==
-* Gaston Claes, ab 1949 Übersetzer und später Redaktor<ref name="evb_claes" />
 * Louis Meerts, Vorsitzender<ref name="kadoc_nl" />
 * Jean Desclée de Maredsous, Vorsitzender des Verwaltungsrats (belegt 1994)<ref name="apic1994b" />
 * Mark Heirman, Chefredaktor (belegt 1997)<ref name="cegesoma" />
-* Tommy Scholtes [[Societas Jesu|SJ]], Direktor (belegt 2001)<ref name="apic2001" /><ref name="zenit2004" />
+* Tommy Scholtes [[Jesuiten|SJ]], Direktor (belegt 2001)<ref name="apic2001" /><ref name="zenit2004" />
 * Eric G. Valentin, Vorsitzender des Verwaltungsrats (belegt 2001)<ref name="apic2001" />
 
 == Archiv ==
@@ -38,17 +33,18 @@ Das Archiv des Centre d’Information de Presse mit Unterlagen aus den Jahren 19
 <ref name="apic1994a">{{Internetquelle |url=https://cath.ch/newsf/bruxelles-l-agence-de-presse-catholique-cip-a-50-ans-050694/ |titel=Bruxelles: L’agence de presse catholique CIP a 50 ans |werk=cath.ch |hrsg=APIC |datum=1994-06-05 |sprache=fr |abruf=2026-11-22}}</ref>
 <ref name="apic1994b">{{Internetquelle |url=https://cath.ch/newsf/bruxelles-50e-anniversaire-de-l-agence-de-presse-cip-080694 |titel=Bruxelles: 50e anniversaire de l’agence de presse CIP |werk=cath.ch |hrsg=APIC |datum=1994-06-08 |sprache=fr |abruf=2026-11-22}}</ref>
 <ref name="apic2001">{{Internetquelle |url=https://cath.ch/newsf/bruxelles-disparition-de-l-agence-de-presse-catholique-francophone-cip-a-bruxelles |titel=Bruxelles: Disparition de l’agence de presse catholique francophone CIP à Bruxelles |werk=cath.ch |hrsg=APIC |datum=2001-12-17 |sprache=fr |abruf=2026-11-22}}</ref>
-<ref name="kadoc">{{Internetquelle |url=https://abstemp.icts.kuleuven.be/query/detail.aspx?ID=2070823 |titel=Archief Centrum voor Informatie aan de Pers (CIP), 1980–2010 |hrsg=KADOC, KU Leuven |sprache=nl |abruf=2026-11-22}} Archivsignatur BE/942855/2591.<!-- PRÜFEN: Link im Browser --></ref>
+<ref name="kadoc">{{Internetquelle |url=https://abs.lias.be/Query/detail.aspx?ID=2070823 |titel=Archief Centrum voor Informatie aan de Pers (CIP), 1980–2010 |hrsg=KADOC, KU Leuven |sprache=nl |abruf=2026-11-22}} Archivsignatur BE/942855/2591.</ref>
 <ref name="kadoc_volk">KADOC: [https://kadoc.kuleuven.be/db/inv/927.pdf ''Plaatsingslijst van het archief Het Volk (directie)'']. S. 26, Nr. 256.</ref>
 <ref name="kadoc_nl">Godfried Kwanten: ''Een katholiek in medialand. Archief Louis Meerts.'' In: [https://kadoc.kuleuven.be/pdf/nieuwsbrief/nb_2011/nb_2011_02.pdf ''KADOC-nieuwsbrief''] 2011/2, S. 8.</ref>
-<ref name="evb_claes">{{Internetquelle |autor=Gaston Durnez |url=https://encyclopedievlaamsebeweging.be/nl/claes-gaston |titel=Claes, Gaston |werk=De digitale Encyclopedie van de Vlaamse beweging |datum=2023 |sprache=nl |abruf=2026-11-22}}<!-- PRÜFEN: Link im Browser --></ref>
-<ref name="cegesoma">Rezension zu Mark Heirman: ''De waanzinnige twintigste eeuw. Oorlog en vrede tussen 1914 en 1994.'' In: [https://www.cegesoma.be/docs/media/chtp_beg/chtp_03/chtp3_020_Bibliotheque.pdf ''Cahiers d’Histoire du Temps présent / Bijdragen tot de Eigentijdse Geschiedenis''] Nr. 3, 1997, S. 345.<!-- PRÜFEN: Rezensent --></ref>
+<ref name="cegesoma">Georgi Verbeeck: Rezension zu Mark Heirman: ''De waanzinnige twintigste eeuw. Oorlog en vrede tussen 1914 en 1994.'' (Antwerpen-Baarn 1995). In: ''Cahiers d’Histoire du Temps présent / Bijdragen tot de Eigentijdse Geschiedenis'' Nr. 3, 1997, S. 345–346 ([https://www.cegesoma.be/docs/media/chtp_beg/chtp_03/chtp3_020_Bibliotheque.pdf PDF]; [https://web.archive.org/web/20260806221707/https://www.cegesoma.be/docs/media/chtp_beg/chtp_03/chtp3_020_Bibliotheque.pdf archiviert] am 6. August 2026).</ref>
 <ref name="zenit2004">{{Internetquelle |url=https://fr.zenit.org/2004/01/29/nouveau-conseiller-ecclesiastique-a-l-ambassade-de-belgique-pres-le-saint-siege/ |titel=Nouveau conseiller ecclésiastique à l’ambassade de Belgique près le Saint-Siège |werk=ZENIT |datum=2004-01-29 |sprache=fr |abruf=2026-11-22}}</ref>
 </references>
 
 {{Normdaten|TYP=k|WIKIDATA=Q142245483}}
 
 [[Kategorie:Nachrichtenagentur]]
+[[Kategorie:Medienunternehmen (Belgien)]]
+[[Kategorie:Ehemaliges Unternehmen (Brüssel)]]
+[[Kategorie:Römisch-katholische Kirche in Belgien]]
 [[Kategorie:Gegründet 1944]]
 [[Kategorie:Aufgelöst 2001]]
-<!-- PRÜFEN: weitere Kategorien, z. B. katholisches Medium / Medienunternehmen (Belgien), nur mit exakt existierendem Namen -->

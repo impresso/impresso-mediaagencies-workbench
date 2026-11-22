@@ -271,10 +271,10 @@
         "KIPA CIP"
       ]
     },
-    "wikipedia_url": null,
+    "wikipedia_url": "https://de.wikipedia.org/wiki/Centre_d%E2%80%99Information_de_Presse",
     "wikidata_url": "https://www.wikidata.org/wiki/Q142245483",
     "trainable": true,
-    "status": "metadata_enriched_no_wikipedia_article",
+    "status": "metadata_enriched",
     "description": "Belgian Catholic religious-news agency based in Brussels. The Centre d'information de presse (CIP) was created in 1944 by Belgian Catholic newspapers with support from church authorities. It supplied daily religious news and a weekly bulletin, worked closely with the Swiss APIC agency, split into autonomous French- and Dutch-language organizations in 1991, and ceased press-agency activity at the end of 2001.",
     "active_period": {
       "start": "1944",
@@ -1171,7 +1171,7 @@
     "label": "org.ent.pressagency.kipa",
     "display_name": "Katholische Internationale Presseagentur",
     "aliases": ["Kipa", "Apic", "Kipa/Apic"],
-    "wikipedia_url": "https://de.wikipedia.org/wiki/Katholische_Internationale_Presseagentur",
+    "wikipedia_url": "https://de.wikipedia.org/wiki/Katholische_internationale_Presseagentur",
     "wikidata_url": "https://www.wikidata.org/wiki/Q1522416",
     "trainable": true,
     "status": "metadata_enriched",
@@ -1189,7 +1189,7 @@
     "metadata_sources": [
       {
         "type": "wikipedia",
-        "url": "https://de.wikipedia.org/wiki/Katholische_Internationale_Presseagentur"
+        "url": "https://de.wikipedia.org/wiki/Katholische_internationale_Presseagentur"
       },
       {
         "type": "wikipedia",
