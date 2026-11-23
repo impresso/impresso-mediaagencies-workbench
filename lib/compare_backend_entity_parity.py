@@ -10,10 +10,15 @@ module compares at the entity level:
    consecutive documents are joined into longer synthetic documents, which
    exposes truncation and windowing errors that short test snippets hide.
    A manifest records where each source document starts.
-2. `compare` reads the backend output (`id`, `entities[{label, offset}]`) and
-   compares it with the evaluator's decoded predictions mapped to character
-   offsets. It reports per-document parity, mismatch categories, and entity
-   metrics against gold for both systems.
+2. `reference-run` runs the verified Hugging Face pipeline (`pipeline.py` of a
+   downloaded model directory) on the same backend input and writes its
+   entities in backend format. Use it as the reference for concatenated input:
+   windows then span document boundaries, so per-document evaluator
+   predictions are no longer the exact expected output.
+3. `compare` reads the backend output (`id`, `entities[{label, offset}]`) and
+   compares it with the reference: the evaluator's decoded predictions mapped
+   to character offsets, or a `reference-run` output. It reports per-document
+   parity, mismatch categories, and entity metrics against gold for both.
 
 Run the backend with anachronism filtering disabled; the evaluator does not
 filter by publication year.
@@ -96,6 +101,26 @@ def export_input(args: argparse.Namespace) -> int:
     return 0
 
 
+def reference_run(args: argparse.Namespace) -> int:
+    from lib.compare_model_inference_parity import import_pipeline, import_runtime
+
+    AutoModelForTokenClassification, AutoTokenizer = import_runtime()
+    MediaAgenciesPipeline = import_pipeline(args.model_dir)
+    tokenizer = AutoTokenizer.from_pretrained(str(args.model_dir))
+    model = AutoModelForTokenClassification.from_pretrained(str(args.model_dir))
+    model.eval()
+    pipeline = MediaAgenciesPipeline(model, tokenizer)
+    out = []
+    for row in load_jsonl(args.backend_input):
+        result = pipeline.predict_one(row["ft"])
+        out.append({"id": row["id"], "entities": [
+            {"label": e["label"], "offset": [e["start"], e["stop"]]} for e in result.get("entities", [])
+        ]})
+    write_jsonl(args.output_jsonl, out)
+    print(f"Wrote reference pipeline entities for {len(out)} documents to {args.output_jsonl}")
+    return 0
+
+
 def backend_char_spans(row: dict[str, Any]) -> set[Span]:
     spans: set[Span] = set()
     for entity in row.get("entities") or []:
@@ -142,6 +167,7 @@ def compare(args: argparse.Namespace) -> int:
     rows = {row["id"]: row for row in load_jsonl(args.input_jsonl)}
     predictions = {row["id"]: row for row in load_jsonl(args.evaluator_predictions)}
     backend = {row["id"]: row for row in load_jsonl(args.backend_output)}
+    reference = {row["id"]: row for row in load_jsonl(args.reference_output)} if args.reference_output else None
 
     totals: Counter[str] = Counter()
     gold_n = evaluator_n = backend_n = evaluator_correct = backend_correct = 0
@@ -157,8 +183,11 @@ def compare(args: argparse.Namespace) -> int:
             pred = predictions[member["id"]]
             if len(pred["pred_labels"]) != len(row["tokens"]):
                 raise ValueError(f"{member['id']}: prediction/token length mismatch")
-            expected |= token_spans_to_char_spans(labels_to_entities(pred["pred_labels"]), row, member["offset"])
+            if reference is None:
+                expected |= token_spans_to_char_spans(labels_to_entities(pred["pred_labels"]), row, member["offset"])
             gold |= gold_char_spans(row, member["offset"])
+        if reference is not None:
+            expected = backend_char_spans(reference[group["id"]])
         if group["id"] not in backend:
             missing_docs.append(group["id"])
             actual: set[Span] = set()
@@ -187,13 +216,14 @@ def compare(args: argparse.Namespace) -> int:
 
     summary = {
         "status": "ok" if not mismatches and not missing_docs else "mismatch",
+        "reference": "reference-run" if reference is not None else "evaluator",
         "concat_size": manifest["concat_size"],
         "documents": len(manifest["groups"]),
         "matching_documents": matching,
         "mismatched_documents": len(mismatches),
         "documents_missing_from_backend": len(missing_docs),
         "mismatch_categories": dict(totals),
-        "evaluator_metrics": prf(gold_n, evaluator_n, evaluator_correct),
+        "reference_metrics": prf(gold_n, evaluator_n, evaluator_correct),
         "backend_metrics": prf(gold_n, backend_n, backend_correct),
     }
     write_json(args.summary_json, summary)
@@ -213,11 +243,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     exp.add_argument("--concat-size", type=int, default=1)
     exp.set_defaults(func=export_input)
 
+    ref = sub.add_parser("reference-run", help="Run the verified HF pipeline on backend input.")
+    ref.add_argument("--model-dir", type=Path, required=True, help="Downloaded model directory containing pipeline.py")
+    ref.add_argument("--backend-input", type=Path, required=True)
+    ref.add_argument("--output-jsonl", type=Path, required=True)
+    ref.set_defaults(func=reference_run)
+
     cmp_ = sub.add_parser("compare", help="Compare backend entities with evaluator predictions.")
     cmp_.add_argument("--input-jsonl", type=Path, required=True)
     cmp_.add_argument("--manifest-json", type=Path, required=True)
     cmp_.add_argument("--evaluator-predictions", type=Path, required=True)
     cmp_.add_argument("--backend-output", type=Path, required=True)
+    cmp_.add_argument("--reference-output", type=Path, default=None, help="reference-run output; default: evaluator predictions")
     cmp_.add_argument("--summary-json", type=Path, required=True)
     cmp_.add_argument("--mismatches-jsonl", type=Path, required=True)
     cmp_.set_defaults(func=compare)
