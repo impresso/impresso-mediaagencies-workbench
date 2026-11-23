@@ -19,7 +19,10 @@ Acceptance criterion for a release run: `status: ok` on both inputs, that is 490
 |---|---|---|---|
 | `impresso-inference` `feat/mediasources-decoupled-pipeline` (`abda62b`), transformers 4.57 | CPU fp32 | 241/490, F1 0.452 | 1/62 |
 | `impresso-inference` `feat/mediasources-tokenization-windows` (`8e03697`), transformers 5.9 | CPU fp32 | **490/490**, F1 0.8902 | **62/62** |
-| same | GPU bf16 | not yet checked | not yet checked |
+| same, L4, torch 2.14.1+cu126 | GPU fp32 | **490/490** | **62/62** |
+| same | GPU bf16 | 487/490, F1 0.8867 | 58/62 |
+
+On real data (GDL 1950, 38,749 articles), bf16 with `torch.compile` differs from fp32 in 13 articles (0.03%). About 14 of 3,325 entities change, and the changes are balanced: 4 appear only in bf16, 4 only in fp32, and 6 have different boundaries. bf16 is 2.8 times faster (5:19 vs. 14:55). The v2.1.0 collection run uses bf16 (`DTYPE_MEDIASOURCES=bf16`, the default in the cookbook v2.1.0 config).
 
 ## Prepare the Inputs and References (Workbench)
 
