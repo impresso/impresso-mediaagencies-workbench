@@ -82,8 +82,8 @@ HF_DATASET_COMMIT ?=
 HF_DATASET_COMPARE_SUMMARY_JSON ?= reports.d/hf-dataset-$(DATASET_REVISION)-comparison.json
 TESTSET ?= impresso-project/newsagency-radiostation-testset
 TESTSET_REVISION ?= TODO
-HF_MODEL ?= impresso-project/mmbert-impresso-mediasources-ner
-HF_MODEL_REPO ?= impresso-project/mmbert-impresso-mediasources-ner
+HF_MODEL ?= impresso-project/mmbert-impresso-mediaagencies-ner
+HF_MODEL_REPO ?= impresso-project/mmbert-impresso-mediaagencies-ner
 HF_MODEL_REVISION ?= $(DATASET_REVISION)
 CURATION_MODEL ?= $(MODEL)
 CURATION_LABEL_MAP ?= $(CURATION_MODEL)/label_map.json
@@ -409,6 +409,22 @@ MODEL_INFERENCE_PARITY_INPUT_JSONL ?= $(TEST_JSONL)
 MODEL_INFERENCE_PARITY_EVALUATOR_PREDICTIONS ?= $(MODEL)/eval/test_predictions.jsonl
 MODEL_INFERENCE_PARITY_SUMMARY_JSON ?= $(MODEL)/eval/test_inference_parity_summary.json
 MODEL_INFERENCE_PARITY_MISMATCHES_JSONL ?= $(MODEL)/eval/test_inference_parity_mismatches.jsonl
+# Entity-level parity of an external corpus backend (e.g. impresso-inference).
+# CONCAT_SIZE > 1 joins test documents into long synthetic articles to expose truncation.
+BACKEND_PARITY_DIR ?= staging.d/$(DATASET_REVISION)-backend-parity
+BACKEND_PARITY_CONCAT_SIZE ?= 1
+BACKEND_PARITY_INPUT_JSONL ?= $(TEST_JSONL)
+BACKEND_PARITY_EVALUATOR_PREDICTIONS ?= $(EVAL_OUTPUT_DIR)/test_predictions.jsonl
+BACKEND_PARITY_BACKEND_INPUT ?= $(BACKEND_PARITY_DIR)/input-c$(BACKEND_PARITY_CONCAT_SIZE).jsonl
+BACKEND_PARITY_MANIFEST ?= $(BACKEND_PARITY_DIR)/manifest-c$(BACKEND_PARITY_CONCAT_SIZE).json
+BACKEND_PARITY_BACKEND_OUTPUT ?= $(BACKEND_PARITY_DIR)/backend-output-c$(BACKEND_PARITY_CONCAT_SIZE).jsonl
+BACKEND_PARITY_SUMMARY_JSON ?= $(BACKEND_PARITY_DIR)/summary-c$(BACKEND_PARITY_CONCAT_SIZE).json
+BACKEND_PARITY_MISMATCHES_JSONL ?= $(BACKEND_PARITY_DIR)/mismatches-c$(BACKEND_PARITY_CONCAT_SIZE).jsonl
+# Reference HF pipeline run on the same backend input (required for CONCAT_SIZE > 1).
+BACKEND_PARITY_REFERENCE_MODEL_DIR ?= $(HF_HOME)/model-$(DATASET_REVISION)
+BACKEND_PARITY_REFERENCE_OUTPUT ?= $(BACKEND_PARITY_DIR)/reference-output-c$(BACKEND_PARITY_CONCAT_SIZE).jsonl
+# Set to true to compare against BACKEND_PARITY_REFERENCE_OUTPUT instead of evaluator predictions.
+BACKEND_PARITY_USE_REFERENCE ?= $(if $(filter 1,$(BACKEND_PARITY_CONCAT_SIZE)),false,true)
 EXPERIMENT_ID ?= decoding-v2.0.0
 EXPERIMENT_SEEDS ?= 17 42 73
 EXPERIMENT_SUPERVISION ?= first_subtoken all_subtokens_b_to_i

@@ -17,7 +17,7 @@ endif
 export HF_HOME
 
 .PHONY: plan-holdout-gaps sample-holdout-gaps
-.PHONY: help help-anno help-data help-model help-pretrain help-finetune smoke clean clean-dry-run anno-housekeeping data-housekeeping prepare-dataset-release finalize-dataset-release promote-dataset-release download-hf-dataset compare-hf-dataset-release audit-tokenization audit-predicted-iob audit-subtokens migrate-tokenization semantic-search check-prerelease-source-dir validate-labels validate-jsonl-format validate-dataset-splits sync-label-map maybe-sync-label-map dataset-statistics dataset-quality-analysis dataset-subword-stats materialize-dataset-tsv materialize-dataset-tsv-quiet annotation-stats mention-profiles entity-surface-frequencies audit-seed-alias-matches curation-article-ids curation-state curation-state-json snippet-state dataset-state eval-disagreement-state audit-empty-training-docs audit-empty-docs-split audit-missing-spans review-missing-spans apply-missing-spans missing-span-status promote-missing-spans integrate-missing-spans audit-existing-spans review-existing-spans apply-existing-spans existing-span-status promote-existing-spans integrate-existing-spans audit-agency-word-boundaries apply-agency-word-boundaries agency-word-boundary-status promote-agency-word-boundaries integrate-agency-word-boundaries review-span-patches apply-span-patches span-patch-status promote-span-patches integrate-span-patches search-tsv review-tsv-search replace-tsv-segment create-tsv-span-patch create-tsv-span-patches apply-tsv-span-patches tsv-span-patch-status promote-tsv-span-patches integrate-tsv-span-patches check-curation-checker plan-media-sampling sample-media-snippets sample-cookbook-snippets recover-cookbook-snippet-decisions sample-all-aliases-media-snippets sample-freely-media-snippets curate import-hipe export-dataset download-mlm-sources build-mlm-data pretrain-mlm push-mlm-model publish-dataset publish-testset train train-fresh decoding-experiment-plan decoding-experiment-status decoding-experiment-train decoding-experiment-evaluate decoding-experiment-report context-experiment-plan context-experiment-status context-experiment-train context-experiment-evaluate context-experiment-report stamp-model-inference-metadata smoke-model-inference compare-model-inference-parity evaluate-validation evaluate-test test test-official curation-eval curation-eval-train curation-eval-validation curation-eval-test curation-review curation-review-train curation-review-validation curation-review-test suggest-eval-disagreements suggest-eval-disagreements-train suggest-eval-disagreements-validation suggest-eval-disagreements-test suggest-media-snippet-spans review-media-snippet-spans review-auto-media-snippet-spans split-media-snippets preview-promote-snippets promote-snippets integrate-snippets curation-dashboard review-curation validate-curation apply-curation push-model
+.PHONY: help help-anno help-data help-model help-pretrain help-finetune smoke clean clean-dry-run anno-housekeeping data-housekeeping prepare-dataset-release finalize-dataset-release promote-dataset-release download-hf-dataset compare-hf-dataset-release audit-tokenization audit-predicted-iob audit-subtokens migrate-tokenization semantic-search check-prerelease-source-dir validate-labels validate-jsonl-format validate-dataset-splits sync-label-map maybe-sync-label-map dataset-statistics dataset-quality-analysis dataset-subword-stats materialize-dataset-tsv materialize-dataset-tsv-quiet annotation-stats mention-profiles entity-surface-frequencies audit-seed-alias-matches curation-article-ids curation-state curation-state-json snippet-state dataset-state eval-disagreement-state audit-empty-training-docs audit-empty-docs-split audit-missing-spans review-missing-spans apply-missing-spans missing-span-status promote-missing-spans integrate-missing-spans audit-existing-spans review-existing-spans apply-existing-spans existing-span-status promote-existing-spans integrate-existing-spans audit-agency-word-boundaries apply-agency-word-boundaries agency-word-boundary-status promote-agency-word-boundaries integrate-agency-word-boundaries review-span-patches apply-span-patches span-patch-status promote-span-patches integrate-span-patches search-tsv review-tsv-search replace-tsv-segment create-tsv-span-patch create-tsv-span-patches apply-tsv-span-patches tsv-span-patch-status promote-tsv-span-patches integrate-tsv-span-patches check-curation-checker plan-media-sampling sample-media-snippets sample-cookbook-snippets recover-cookbook-snippet-decisions sample-all-aliases-media-snippets sample-freely-media-snippets curate import-hipe export-dataset download-mlm-sources build-mlm-data pretrain-mlm push-mlm-model publish-dataset publish-testset train train-fresh decoding-experiment-plan decoding-experiment-status decoding-experiment-train decoding-experiment-evaluate decoding-experiment-report context-experiment-plan context-experiment-status context-experiment-train context-experiment-evaluate context-experiment-report stamp-model-inference-metadata smoke-model-inference compare-model-inference-parity backend-parity-input backend-parity-reference compare-backend-parity evaluate-validation evaluate-test test test-official curation-eval curation-eval-train curation-eval-validation curation-eval-test curation-review curation-review-train curation-review-validation curation-review-test suggest-eval-disagreements suggest-eval-disagreements-train suggest-eval-disagreements-validation suggest-eval-disagreements-test suggest-media-snippet-spans review-media-snippet-spans review-auto-media-snippet-spans split-media-snippets preview-promote-snippets promote-snippets integrate-snippets curation-dashboard review-curation validate-curation apply-curation push-model
 
 help:
 	@echo "Impresso media sources NER workbench"
@@ -210,6 +210,9 @@ help-model:
 	@echo "  make push-model CFG=...                    Push model payload to Hugging Face"
 	@echo "  make smoke-model-inference CFG=...         Run a small real-checkpoint inference smoke test"
 	@echo "  make compare-model-inference-parity CFG=... Compare HF runtime predictions with evaluator decoded predictions"
+	@echo "  make backend-parity-input CFG=...         Export the test split as corpus-backend input (BACKEND_PARITY_CONCAT_SIZE=8 for long docs)"
+	@echo "  make backend-parity-reference CFG=...    Run the verified HF pipeline on the backend input as reference"
+	@echo "  make compare-backend-parity CFG=...       Compare corpus-backend entities with evaluator decoded predictions"
 
 help-pretrain:
 	@echo "Pretraining targets"
@@ -245,6 +248,9 @@ help-finetune:
 	@echo "  make stamp-model-inference-metadata       Stamp tokenization/training/decoding policy into config.json"
 	@echo "  make smoke-model-inference CFG=...        Run a small real-checkpoint inference smoke test"
 	@echo "  make compare-model-inference-parity CFG=... Compare HF runtime predictions with evaluator decoded predictions"
+	@echo "  make backend-parity-input CFG=...         Export the test split as corpus-backend input (BACKEND_PARITY_CONCAT_SIZE=8 for long docs)"
+	@echo "  make backend-parity-reference CFG=...    Run the verified HF pipeline on the backend input as reference"
+	@echo "  make compare-backend-parity CFG=...       Compare corpus-backend entities with evaluator decoded predictions"
 	@echo "  make test CFG=...                          Evaluate validation via training submodule"
 	@echo "  make test-official CFG=...                 Evaluate test and record official metrics"
 
@@ -999,6 +1005,25 @@ compare-model-inference-parity:
 	@echo "Comparing HF runtime inference with evaluator decoded predictions on the test split."
 	@test -f "$(MODEL_INFERENCE_PARITY_EVALUATOR_PREDICTIONS)" || { echo "Missing evaluator test predictions: $(MODEL_INFERENCE_PARITY_EVALUATOR_PREDICTIONS)"; echo "Next step:"; echo "  # Generate decoded evaluator predictions first, or pass MODEL_INFERENCE_PARITY_EVALUATOR_PREDICTIONS=..."; echo "  make evaluate-test CFG=$(CFG)"; exit 1; }
 	$(PYTHON) -m lib.compare_model_inference_parity --model "$(MODEL_INFERENCE_PARITY_MODEL)" --input-jsonl "$(MODEL_INFERENCE_PARITY_INPUT_JSONL)" --evaluator-predictions "$(MODEL_INFERENCE_PARITY_EVALUATOR_PREDICTIONS)" --summary-json "$(MODEL_INFERENCE_PARITY_SUMMARY_JSON)" --mismatches-jsonl "$(MODEL_INFERENCE_PARITY_MISMATCHES_JSONL)" $(ARGS)
+
+backend-parity-input:
+	@echo "Exporting the test split as Impresso-style backend input (concat size $(BACKEND_PARITY_CONCAT_SIZE))."
+	$(PYTHON) -m lib.compare_backend_entity_parity export-input --input-jsonl "$(BACKEND_PARITY_INPUT_JSONL)" --output-jsonl "$(BACKEND_PARITY_BACKEND_INPUT)" --manifest-json "$(BACKEND_PARITY_MANIFEST)" --concat-size "$(BACKEND_PARITY_CONCAT_SIZE)"
+	@echo "Next steps:"
+	@echo "  # Run the backend on $(BACKEND_PARITY_BACKEND_INPUT) with anachronism filtering disabled,"
+	@echo "  # writing $(BACKEND_PARITY_BACKEND_OUTPUT), then:"
+	@echo "  make compare-backend-parity BACKEND_PARITY_CONCAT_SIZE=$(BACKEND_PARITY_CONCAT_SIZE)"
+
+backend-parity-reference:
+	@echo "Running the verified HF pipeline on $(BACKEND_PARITY_BACKEND_INPUT)."
+	@test -f "$(BACKEND_PARITY_REFERENCE_MODEL_DIR)/pipeline.py" || { echo "Missing downloaded model: $(BACKEND_PARITY_REFERENCE_MODEL_DIR)"; echo "  hf download $(HF_MODEL_REPO) --revision $(HF_MODEL_REVISION) --local-dir $(BACKEND_PARITY_REFERENCE_MODEL_DIR)"; exit 1; }
+	$(PYTHON) -m lib.compare_backend_entity_parity reference-run --model-dir "$(BACKEND_PARITY_REFERENCE_MODEL_DIR)" --backend-input "$(BACKEND_PARITY_BACKEND_INPUT)" --output-jsonl "$(BACKEND_PARITY_REFERENCE_OUTPUT)"
+
+compare-backend-parity:
+	@echo "Comparing corpus-backend entities with evaluator decoded predictions."
+	@test -f "$(BACKEND_PARITY_EVALUATOR_PREDICTIONS)" || { echo "Missing evaluator test predictions: $(BACKEND_PARITY_EVALUATOR_PREDICTIONS)"; echo "Next step:"; echo "  make evaluate-test CFG=$(CFG)"; exit 1; }
+	@test -f "$(BACKEND_PARITY_BACKEND_OUTPUT)" || { echo "Missing backend output: $(BACKEND_PARITY_BACKEND_OUTPUT)"; exit 1; }
+	$(PYTHON) -m lib.compare_backend_entity_parity compare --input-jsonl "$(BACKEND_PARITY_INPUT_JSONL)" --manifest-json "$(BACKEND_PARITY_MANIFEST)" --evaluator-predictions "$(BACKEND_PARITY_EVALUATOR_PREDICTIONS)" --backend-output "$(BACKEND_PARITY_BACKEND_OUTPUT)" $(if $(filter true,$(BACKEND_PARITY_USE_REFERENCE)),--reference-output "$(BACKEND_PARITY_REFERENCE_OUTPUT)",) --summary-json "$(BACKEND_PARITY_SUMMARY_JSON)" --mismatches-jsonl "$(BACKEND_PARITY_MISMATCHES_JSONL)"
 
 evaluate-validation: maybe-sync-label-map
 	@echo "Evaluating the selected checkpoint on the validation split."

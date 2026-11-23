@@ -40,8 +40,8 @@ hub/*
 !hub/newsagency-radiostation-dataset/**
 !hub/newsagency-radiostation-testset
 !hub/newsagency-radiostation-testset/**
-!hub/mmbert-impresso-mediasources-ner
-!hub/mmbert-impresso-mediasources-ner/**
+!hub/mmbert-impresso-mediaagencies-ner
+!hub/mmbert-impresso-mediaagencies-ner/**
 !hub/multilingualmodernimpressoBERT
 !hub/multilingualmodernimpressoBERT/**
 impresso-pipelines

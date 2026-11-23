@@ -17,9 +17,9 @@ def test_local_model_source_is_resolved_without_revision(tmp_path: Path) -> None
 
 def test_hf_model_source_preserves_revision() -> None:
     source, kwargs = resolve_model_source(
-        "impresso-project/mmbert-impresso-mediasources-ner",
+        "impresso-project/mmbert-impresso-mediaagencies-ner",
         revision="v2.0.0",
     )
 
-    assert source == "impresso-project/mmbert-impresso-mediasources-ner"
+    assert source == "impresso-project/mmbert-impresso-mediaagencies-ner"
     assert kwargs == {"revision": "v2.0.0"}

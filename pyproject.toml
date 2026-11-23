@@ -1,5 +1,5 @@
 [project]
-name = "impresso-mediasources-ner-workbench"
+name = "impresso-mediaagencies-workbench"
 version = "0.1.0"
 description = "Workbench for Impresso news-agency and radio-station training material and model publication"
 readme = "README.md"

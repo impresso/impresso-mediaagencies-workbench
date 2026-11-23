@@ -761,7 +761,7 @@ This writes `data/candidates/newsagency_search_snippets.jsonl` by default. Query
 Suggest spans for sampled snippets. The suggest step uses the configured model plus known-entity metadata matchers across the configured news-agency, radio-station, and optional newspaper catalogs. This means a news-agency sample can still be preannotated with radio-station or newspaper spans when those known entities occur in the same snippet:
 
 ```bash
-make suggest-media-snippet-spans MEDIA_FAMILY=pressagency MEDIA_SNIPPETS=data/candidates/newsagency_search_snippets.jsonl HF_MODEL=impresso-project/mmbert-impresso-mediasources-ner
+make suggest-media-snippet-spans MEDIA_FAMILY=pressagency MEDIA_SNIPPETS=data/candidates/newsagency_search_snippets.jsonl HF_MODEL=impresso-project/mmbert-impresso-mediaagencies-ner
 ```
 
 The scorer writes `data/curated/snippets/newsagencies/scored.jsonl` by default. Rows are marked:

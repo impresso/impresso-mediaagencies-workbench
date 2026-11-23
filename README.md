@@ -34,7 +34,7 @@ Dataset and model v2.1.0 were released in November 2026.
 
 **Model**
 
-- Repository: `impresso-project/mmbert-impresso-mediasources-ner`
+- Repository: `impresso-project/mmbert-impresso-mediaagencies-ner`
 - Revision: `v2.1.0`
 - Hugging Face commit: `1dfa9a3e39d6792fc75f1d8f1089e2909bf14b83`
 - Base model: `impresso-project/mmbert-multilingual-impresso-continued-mlm`
@@ -59,7 +59,7 @@ Dataset and model v2.0.0 were released in August 2026.
 
 **Model**
 
-- Repository: `impresso-project/mmbert-impresso-mediasources-ner`
+- Repository: `impresso-project/mmbert-impresso-mediaagencies-ner`
 - Revision: `v2.0.0`
 - Hugging Face commit: `9899ad960b9bc310ee51cd7ee658fd3882b6b140`
 - Base model: `impresso-project/mmbert-multilingual-impresso-continued-mlm`
@@ -107,7 +107,7 @@ tests/         Fixtures and contract tests
 Use Python 3.11 or newer.
 
 ```bash
-cd impresso-mediasources-ner-workbench
+cd impresso-mediaagencies-workbench
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
@@ -379,7 +379,7 @@ For a decision-level audit, inspect `data/curated/legacy-import-curated/curation
 
 For a lightweight NER-tag overview, inspect `data/curated/legacy-import-curated/curation_changes_tags.tsv`. It is a CoNLL-like TSV grouped by review item, with comments followed by `TOKEN`, `BEFORE_NERTAG`, and `AFTER_NERTAG` columns. Context comments and review displays use the HIPE `NoSpaceAfter` render metadata where available, so abbreviations and elisions appear in natural form such as `D.N.B.` or `l'Agence`, not as whitespace-joined token strings.
 
-The fine-tuned Hugging Face model repository is configured as `HF_MODEL=impresso-project/mmbert-impresso-mediasources-ner`. The v0.1 label space covers news agencies and radio stations; the repository name leaves room for future cited media-source families such as newspaper citations.
+The fine-tuned Hugging Face model repository is configured as `HF_MODEL=impresso-project/mmbert-impresso-mediaagencies-ner`. The v0.1 label space covers news agencies and radio stations; the repository name leaves room for future cited media-source families such as newspaper citations.
 
 ```bash
 make push-model MODEL=models.d/newsagency_radiostation_modernbert_v2.0.0_continue1/best

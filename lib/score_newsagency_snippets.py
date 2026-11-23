@@ -421,7 +421,7 @@ def load_model_runtime(args: argparse.Namespace) -> tuple[Any, Any, Any, Any, st
                 f"Model path does not exist: {model_ref}\n\n"
                 "Transformers would otherwise treat this as a Hugging Face repo id. "
                 "Point HF_MODEL/--model to an existing local model directory, or use a Hub id like "
-                "impresso-project/mmbert-impresso-mediasources-ner."
+                "impresso-project/mmbert-impresso-mediaagencies-ner."
             )
     torch, model_cls, tokenizer_cls = import_runtime()
     device = device_for(str(getattr(args, "device", "auto")), torch)

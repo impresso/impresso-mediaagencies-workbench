@@ -176,11 +176,11 @@ For the new JSONL inference output:
 
 | Role | Proposed location | Purpose |
 | --- | --- | --- |
-| Workbench GitHub repo | `impresso-mediasources-ner-workbench` | Control plane for sampling, curation, configs, tests, source HF cards, and publish scripts |
+| Workbench GitHub repo | `impresso-mediaagencies-workbench` | Control plane for sampling, curation, configs, tests, source HF cards, and publish scripts |
 | Training code submodule | `training/newsagency-radiostation-modernbert-classifier/` | ModernBERT-only token-classification training/evaluation code adapted from Nikki's repo |
 | HF training dataset repo | `impresso-project/impresso-mediaagencies-ner-dataset` | Published curated training data for both entity families |
 | HF testset repo | `impresso-project/newsagency-radiostation-testset` | Frozen held-out benchmark |
-| HF model repo | `impresso-project/mmbert-impresso-mediasources-ner` | Published model payload and self-contained HF inference pipeline for source-mention NER |
+| HF model repo | `impresso-project/mmbert-impresso-mediaagencies-ner` | Published model payload and self-contained HF inference pipeline for source-mention NER |
 | HF continued-MLM model repo | `impresso-project/mmbert-multilingual-impresso-continued-mlm` | Domain-adapted multilingual mmBERT checkpoint from continued MLM on Impresso text |
 | Pipeline reference submodule | `pipeline/impresso-pipelines/` | Existing `impresso-pipelines` package and old news-agency HF pipeline implementation |
 
@@ -194,7 +194,7 @@ News-agency labels are derived from `all_newsagencies.txt`. Radio-station labels
 ## Proposed Workbench Layout
 
 ```text
-impresso-mediasources-ner-workbench/
+impresso-mediaagencies-workbench/
   AGENTS.md
   README.md
   WORKBENCH_PLAN.md
@@ -242,7 +242,7 @@ impresso-mediasources-ner-workbench/
   hub/
     impresso-mediaagencies-ner-dataset/
     newsagency-radiostation-testset/
-    mmbert-impresso-mediasources-ner/
+    mmbert-impresso-mediaagencies-ner/
     multilingualmodernimpressoBERT/
 
   training/
@@ -427,7 +427,7 @@ News agencies already have a model trained from HIPE-derived agency annotations 
 Pipeline:
 
 1. Sample snippets by canonical news-agency query, alias, language, newspaper, and date bucket.
-2. Run the current `mmbert-impresso-mediasources-ner` model on each snippet.
+2. Run the current `mmbert-impresso-mediaagencies-ner` model on each snippet.
 3. Convert model output into candidate spans with confidence and margin metadata.
 4. Auto-accept only high-confidence, policy-compatible predictions when the predicted label matches the sampled canonical agency or a known alias-compatible canonical label.
 5. Send uncertain or suspicious cases to manual span review.
@@ -455,7 +455,7 @@ Suggested candidate fields:
   "text": "...",
   "tokens": ["..."],
   "model": {
-    "repo_id": "impresso-project/mmbert-impresso-mediasources-ner",
+    "repo_id": "impresso-project/mmbert-impresso-mediaagencies-ner",
     "revision": "<sha>",
     "predicted_spans": [
       {
@@ -1048,7 +1048,7 @@ Publish data, models, and inference code to Hugging Face so downstream users do 
 | --- | --- | --- |
 | Training data | `impresso-project/impresso-mediaagencies-ner-dataset` | Curated JSONL training examples and metadata for both entity families |
 | Official test set | `impresso-project/newsagency-radiostation-testset` | Frozen JSONL held-out benchmark with versioned membership |
-| Model payload | `impresso-project/mmbert-impresso-mediasources-ner` | Model weights, tokenizer, `config.json`, `README.md`, `pipeline.py`, `requirements.txt` |
+| Model payload | `impresso-project/mmbert-impresso-mediaagencies-ner` | Model weights, tokenizer, `config.json`, `README.md`, `pipeline.py`, `requirements.txt` |
 
 ### Source Copies In Workbench
 
@@ -1068,7 +1068,7 @@ Publishing scripts copy these into the appropriate HF repos. Do not edit cards o
 
 - [ ] Add `hub/impresso-mediaagencies-ner-dataset` as a submodule pointing to the HF training dataset repo.
 - [ ] Add `hub/newsagency-radiostation-testset` as a submodule pointing to the HF testset repo.
-- [ ] Add `hub/mmbert-impresso-mediasources-ner` as a submodule pointing to the HF model repo.
+- [ ] Add `hub/mmbert-impresso-mediaagencies-ner` as a submodule pointing to the HF model repo.
 - [ ] Implement `lib.publish_dataset` with dry-run preflights.
 - [ ] Implement `lib.publish_testset` with stronger frozen-testset checks.
 - [ ] Implement `lib.push_model_to_hub` with model payload preflights.
