@@ -176,7 +176,7 @@ For the new JSONL inference output:
 
 | Role | Proposed location | Purpose |
 | --- | --- | --- |
-| Workbench GitHub repo | `impresso-mediasources-ner-workbench` | Control plane for sampling, curation, configs, tests, source HF cards, and publish scripts |
+| Workbench GitHub repo | `impresso-mediaagencies-workbench` | Control plane for sampling, curation, configs, tests, source HF cards, and publish scripts |
 | Training code submodule | `training/newsagency-radiostation-modernbert-classifier/` | ModernBERT-only token-classification training/evaluation code adapted from Nikki's repo |
 | HF training dataset repo | `impresso-project/impresso-mediaagencies-ner-dataset` | Published curated training data for both entity families |
 | HF testset repo | `impresso-project/newsagency-radiostation-testset` | Frozen held-out benchmark |
@@ -194,7 +194,7 @@ News-agency labels are derived from `all_newsagencies.txt`. Radio-station labels
 ## Proposed Workbench Layout
 
 ```text
-impresso-mediasources-ner-workbench/
+impresso-mediaagencies-workbench/
   AGENTS.md
   README.md
   WORKBENCH_PLAN.md

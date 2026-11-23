@@ -107,7 +107,7 @@ tests/         Fixtures and contract tests
 Use Python 3.11 or newer.
 
 ```bash
-cd impresso-mediasources-ner-workbench
+cd impresso-mediaagencies-workbench
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
