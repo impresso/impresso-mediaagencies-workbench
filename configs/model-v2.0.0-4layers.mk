@@ -9,7 +9,7 @@ include configs/model-v2.0.0.mk
 MODEL = models.d/newsagency_radiostation_modernbert_v2.0.0-label-all-tokens-4layers
 SELECTED_MODEL = $(MODEL)/best
 HF_MODEL = $(SELECTED_MODEL)
-HF_MODEL_REPO = impresso-project/mmbert-impresso-mediasources-ner
+HF_MODEL_REPO = impresso-project/mmbert-impresso-mediaagencies-ner
 HF_MODEL_REVISION = v2.0.0
 CURATION_MODEL = $(SELECTED_MODEL)
 

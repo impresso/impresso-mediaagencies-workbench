@@ -1,6 +1,6 @@
 # Corpus Backend Parity
 
-Corpus processing does not use the Hugging Face pipeline that the release checks verify. It uses the `impresso-inference` mediasources runner, which reimplements tokenization, windowing, the forward pass, and Viterbi decoding for GPU throughput. The backend parity check verifies that this runner reproduces the evaluated model before it touches the collection.
+Corpus processing does not use the Hugging Face pipeline that the release checks verify. It uses the `impresso-inference` mediaagencies runner, which reimplements tokenization, windowing, the forward pass, and Viterbi decoding for GPU throughput. The backend parity check verifies that this runner reproduces the evaluated model before it touches the collection.
 
 The check compares character-offset entities, not token labels, so it works for any backend that reads Impresso JSONL (`id`, `ft`, `d`) and writes `{"id", "entities": [{"label", "offset": [start, stop]}]}`.
 
@@ -22,7 +22,7 @@ Acceptance criterion for a release run: `status: ok` on both inputs, that is 490
 | same, L4, torch 2.14.1+cu126 | GPU fp32 | **490/490** | **62/62** |
 | same | GPU bf16 | 487/490, F1 0.8867 | 58/62 |
 
-On real data (GDL 1950, 38,749 articles), bf16 with `torch.compile` differs from fp32 in 13 articles (0.03%). About 14 of 3,325 entities change, and the changes are balanced: 4 appear only in bf16, 4 only in fp32, and 6 have different boundaries. bf16 is 2.8 times faster (5:19 vs. 14:55). The v2.1.0 collection run uses bf16 (`DTYPE_MEDIASOURCES=bf16`, the default in the cookbook v2.1.0 config).
+On real data (GDL 1950, 38,749 articles), bf16 with `torch.compile` differs from fp32 in 13 articles (0.03%). About 14 of 3,325 entities change, and the changes are balanced: 4 appear only in bf16, 4 only in fp32, and 6 have different boundaries. bf16 is 2.8 times faster (5:19 vs. 14:55). The v2.1.0 collection run uses bf16 (`DTYPE_MEDIAAGENCIES=bf16`, the default in the cookbook v2.1.0 config).
 
 ## Prepare the Inputs and References (Workbench)
 
@@ -47,7 +47,7 @@ make backend-parity-reference CFG=configs/model-v2.1.0.mk BACKEND_PARITY_CONCAT_
 `backend-parity-reference` needs the published model downloaded to `hf.d/model-v2.1.0`:
 
 ```bash
-hf download impresso-project/mmbert-impresso-mediasources-ner --revision v2.1.0 --local-dir hf.d/model-v2.1.0
+hf download impresso-project/mmbert-impresso-mediaagencies-ner --revision v2.1.0 --local-dir hf.d/model-v2.1.0
 ```
 
 The inputs are written to `staging.d/v2.1.0-backend-parity/`.
@@ -65,8 +65,8 @@ The GPU machine needs only the two input files and the cookbook environment.
 2. On the GPU machine, set up the cookbook environment from the pinned requirements:
 
    ```bash
-   git clone --recursive -b feat/integrate-impresso-inference https://github.com/impresso/impresso-mediasources-cookbook.git
-   cd impresso-mediasources-cookbook
+   git clone --recursive -b feat/integrate-impresso-inference https://github.com/impresso/impresso-mediaagencies-cookbook.git
+   cd impresso-mediaagencies-cookbook
    uv venv && source .venv/bin/activate
    uv pip install -r requirements.txt
    uv pip install --no-cache torch --index-url https://download.pytorch.org/whl/cu124
@@ -78,7 +78,7 @@ The GPU machine needs only the two input files and the cookbook environment.
    python -c "import transformers, torch; print(transformers.__version__, torch.cuda.is_available(), torch.cuda.get_device_name(0))"
    ```
 
-   The mediasources runner refuses to start with transformers 4.x.
+   The mediaagencies runner refuses to start with transformers 4.x.
 
 3. Run the backend with the production settings (bf16, production batch size) and, as a control, with fp32. Anachronism filtering must be disabled because the references do not filter by publication year.
 
@@ -86,10 +86,10 @@ The GPU machine needs only the two input files and the cookbook environment.
    cd ~/backend-parity
    for precision in bf16 fp32; do
      for k in 1 8; do
-       python -m impresso_inference.tasks.mediasources.cli.run \
+       python -m impresso_inference.tasks.mediaagencies.cli.run \
          --input input-c$k.jsonl \
          --output backend-$precision-c$k.jsonl \
-         --model-name impresso-project/mmbert-impresso-mediasources-ner \
+         --model-name impresso-project/mmbert-impresso-mediaagencies-ner \
          --revision v2.1.0 \
          --device cuda \
          --precision $precision \
@@ -99,7 +99,7 @@ The GPU machine needs only the two input files and the cookbook environment.
    done
    ```
 
-   Keep `--batch-size` at the value the cookbook config uses (`BATCH_SIZE_MEDIASOURCES`, 256). Batch composition changes padding, and with reduced precision padding can change results.
+   Keep `--batch-size` at the value the cookbook config uses (`BATCH_SIZE_MEDIAAGENCIES`, 256). Batch composition changes padding, and with reduced precision padding can change results.
 
 4. Copy the four outputs back to the workbench:
 
@@ -126,8 +126,8 @@ Repeat both commands with `fp32` in place of `bf16`. With `BACKEND_PARITY_CONCAT
 | GPU fp32 | GPU bf16 | Meaning | Action |
 |---|---|---|---|
 | ok | ok | The production setting reproduces the model. | Run the collection with bf16. |
-| ok | a few mismatches, F1 within about 0.002 of the reference | bf16 flips borderline decisions. | Decide whether to accept and record the measured F1 and mismatch count in the run notes, or run with `DTYPE_MEDIASOURCES=float32`. |
-| ok | many mismatches or a clear F1 drop | bf16 is not usable with this model. | Run with `DTYPE_MEDIASOURCES=float32`. |
+| ok | a few mismatches, F1 within about 0.002 of the reference | bf16 flips borderline decisions. | Decide whether to accept and record the measured F1 and mismatch count in the run notes, or run with `DTYPE_MEDIAAGENCIES=float32`. |
+| ok | many mismatches or a clear F1 drop | bf16 is not usable with this model. | Run with `DTYPE_MEDIAAGENCIES=float32`. |
 | mismatch | any | The GPU environment differs from the CPU check (library versions, kernels). | Do not run the collection. Compare `transformers`, `torch`, and `tokenizers` versions with the CPU check and inspect `mismatches-fp32-*.jsonl`. |
 
 Mismatch categories in the summary:
